@@ -30,7 +30,7 @@ class _Margarita3DScreenState extends State<Margarita3DScreen>
                     child: SizedBox(
                       height: constraints.maxHeight * 0.8,
                       child: const ModelViewer(
-                        src: 'assets/models/margarita.glb',
+                        src: 'https://storage.googleapis.com/love14flower/margarita.glb',
                         alt: "Una margarita 3D",
                         ar: true,
                         autoPlay: true,
@@ -74,7 +74,7 @@ class _Margarita3DScreenState extends State<Margarita3DScreen>
                   child: SizedBox(
                     height: constraints.maxHeight * 0.4,
                     child: const ModelViewer(
-                      src: 'assets/models/margarita.glb',
+                      src: 'https://storage.googleapis.com/love14flower/margarita.glb',
                       alt: "Una margarita 3D",
                       ar: true,
                       autoPlay: true,

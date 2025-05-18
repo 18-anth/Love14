@@ -51,9 +51,9 @@ class BottomNavBar extends StatelessWidget {
 
         // Nuestra Historia
         BottomNavigationBarItem(
-          icon: Icon(Icons.book_outlined),
-          activeIcon: Icon(Icons.book, color: Colors.pink),
-          label: 'Historia',
+          icon: Icon(Icons.person),
+          activeIcon: Icon(Icons.person_3_outlined, color: Colors.pink),
+          label: 'Perfil',
         ),
       ],
     );

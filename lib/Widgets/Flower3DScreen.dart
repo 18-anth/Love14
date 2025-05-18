@@ -38,7 +38,8 @@ class _Flower3DScreenState extends State<Flower3DScreen>
                     child: SizedBox(
                       height: constraints.maxHeight * 0.8,
                       child: const ModelViewer(
-                        src: 'assets/models/flower.glb',
+                        src:
+                            'https://storage.googleapis.com/love14flower/flower.glb',
                         alt: "Un girasol 3D",
                         ar: true,
                         autoPlay: true,
@@ -74,7 +75,8 @@ class _Flower3DScreenState extends State<Flower3DScreen>
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.4,
                   child: const ModelViewer(
-                    src: 'assets/models/flower.glb',
+                    src:
+                        'https://storage.googleapis.com/love14flower/flower.glb',
                     alt: "Un girasol 3D",
                     ar: true,
                     autoPlay: true,

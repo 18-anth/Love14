@@ -39,21 +39,21 @@ class CustomNavigationRail extends StatelessWidget {
         NavigationRailDestination(
           icon: _buildFlowerIcon(false),
           selectedIcon: _buildFlowerIcon(true),
-          label: const Text('Nuestras Flores'),
+          label: const Text('Flores'),
         ),
 
         // Segundo apartado - Animaciones
         NavigationRailDestination(
           icon: Icon(Icons.animation_outlined),
           selectedIcon: Icon(Icons.animation, color: AppColors.primaryYellow),
-          label: const Text('Nuestros Momentos'),
+          label: const Text('Momentos'),
         ),
 
         // Tercer apartado - Historia de amor
         NavigationRailDestination(
-          icon: Icon(Icons.book_outlined),
-          selectedIcon: Icon(Icons.bookmark_border_sharp, color: Colors.red),
-          label: const Text('Nuestra Historia'),
+          icon: Icon(Icons.person),
+          selectedIcon: Icon(Icons.person_3_outlined, color: Colors.red),
+          label: const Text('Perfil'),
         ),
       ],
     );

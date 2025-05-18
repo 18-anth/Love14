@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
+  static const sunflowerYellow = Color(0xFFFFD700);
+  static const goldenHour = Color(0xFFFDB813);
+  static const deepGreen = Color(0xFF2F4F4F);
+  static const warmBrown = Color(0xFF8B4513);
+  static const softPink = Color(0xFFFFB6C1);
+  static const errorRed = Color(0xFF9A031E);
   static const primaryYellow = Color(0xfff3ece7);
   static const lightYellow = Color(0xFFFFF9C4);
   static const primaryPink = Color(0xFFFFD1DC);

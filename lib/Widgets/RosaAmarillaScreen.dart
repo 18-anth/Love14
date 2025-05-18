@@ -1,4 +1,4 @@
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: library_private_types_in_public_api, deprecated_member_use
 
 import 'package:flutter/material.dart';
 import 'package:glassmorphism/glassmorphism.dart';
@@ -6,21 +6,21 @@ import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 
-class TulipanScreen extends StatefulWidget {
-  const TulipanScreen({super.key});
+class RosaAmarillaScreen extends StatefulWidget {
+  const RosaAmarillaScreen({super.key});
 
   @override
-  _TulipanScreenState createState() => _TulipanScreenState();
+  _RosaAmarillaScreenState createState() => _RosaAmarillaScreenState();
 }
 
-class _TulipanScreenState extends State<TulipanScreen>
+class _RosaAmarillaScreenState extends State<RosaAmarillaScreen>
     with SingleTickerProviderStateMixin {
   final List<String> _caracteristicas = [
-    "Como un tulipán al amanecer, eres la promesa de un día hermoso.",
-    "Delicada pero fuerte, así como tú enfrentas la vida.",
-    "Los tulipanes florecen en primavera, tú floreces en cada momento que sonríes.",
-    "Cada color de tulipán tiene un significado, pero tú los reúnes todos: amor, alegría, ternura.",
-    "Así como el tulipán se abre con el sol, mi corazón se abre cuando estás cerca.",
+    "Como una rosa amarilla, tu presencia ilumina los momentos más oscuros.",
+    "Eres símbolo de alegría, cariño y amistad profunda.",
+    "Así como la rosa resiste el tiempo y florece, tú brillas en cada estación de la vida.",
+    "Tus gestos suaves me recuerdan a los pétalos dorados de esta flor.",
+    "La rosa amarilla dice sin palabras lo mucho que significas para mí.",
   ];
 
   @override
@@ -37,9 +37,8 @@ class _TulipanScreenState extends State<TulipanScreen>
                     child: SizedBox(
                       height: constraints.maxHeight * 0.8,
                       child: const ModelViewer(
-                        src:
-                            'https://storage.googleapis.com/love14flower/tulipan.glb', // cambia tu modelo aquí
-                        alt: "Un tulipán 3D",
+                        src: 'https://storage.googleapis.com/love14flower/rosa_amarilla.glb',
+                        alt: "Una rosa amarilla 3D",
                         ar: true,
                         autoPlay: true,
                         autoRotate: true,
@@ -76,8 +75,8 @@ class _TulipanScreenState extends State<TulipanScreen>
                   child: SizedBox(
                     height: constraints.maxHeight * 0.8,
                     child: const ModelViewer(
-                      src: 'https://storage.googleapis.com/love14flower/tulipan.glb',
-                      alt: "Un tulipán 3D",
+                      src: 'https://storage.googleapis.com/love14flower/rosa_amarilla.glb',
+                      alt: "Una rosa amarilla 3D",
                       ar: true,
                       autoPlay: true,
                       autoRotate: true,
@@ -93,17 +92,21 @@ class _TulipanScreenState extends State<TulipanScreen>
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-              _buildPoemContainer(
-                context,
-                MediaQuery.of(context).size.height * 0.3,
-                MediaQuery.of(context).size.width * 0.9,
+                        _buildPoemContainer(
+                          context,
+                          MediaQuery.of(context).size.height * 0.3,
+                          MediaQuery.of(context).size.width * 0.9,
+                        ),
+                        const SizedBox(height: 20),
+                        _buildLoveCards(context),
+                      ],
+                    ),
+                  ),
+                ),
               ),
-              const SizedBox(height: 20),
-              _buildLoveCards(context),
-            ],),),),),
             ],
           );
-          },
+        },
       ),
     );
   }
@@ -127,8 +130,8 @@ class _TulipanScreenState extends State<TulipanScreen>
       ),
       borderGradient: LinearGradient(
         colors: [
-          Colors.orangeAccent.withOpacity(0.5),
-          Colors.deepOrange.withOpacity(0.2),
+          Colors.yellowAccent.withOpacity(0.5),
+          Colors.orangeAccent.withOpacity(0.2),
         ],
       ),
       child: Padding(
@@ -166,7 +169,7 @@ class _TulipanScreenState extends State<TulipanScreen>
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
-                color: Colors.amber.shade100,
+                color: Colors.yellow.shade100,
                 margin: const EdgeInsets.symmetric(vertical: 8),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -189,16 +192,22 @@ class _TulipanScreenState extends State<TulipanScreen>
     final width = MediaQuery.of(context).size.width;
     if (width > 1000) return 32;
     if (width > 600) return 20;
-    return 22; // Tamaño para móviles
+    return 22;
   }
 
   String get _poema => '''
-T u dulzura florece como un tulipán en primavera.  
-U n detalle tuyo puede cambiar mi día entero.  
-L lenas de color mis pensamientos más grises.  
-I luminada estás siempre, incluso en lo simple.  
-P or eso, cuando pienso en belleza, pienso en ti.  
-A marte es como admirar un tulipán: sereno, profundo, inevitable.  
-N o hay jardín más perfecto que el que florece contigo. 🌷  
+R esplandeces con la luz suave de la mañana.  
+O freces ternura con cada gesto sincero.  
+S on tus palabras pétalos de consuelo y alegría.  
+A sí como la rosa amarilla, inspiras calidez.  
+
+A marte es un sol constante, como el color que llevas.  
+M is días florecen con solo verte.  
+A través de ti aprendí que la belleza es simple, auténtica, y pura.  
+R ecordarte es como oler una rosa en primavera.  
+I luminas con tu risa, como el oro más brillante.  
+L eal, dulce, radiante... así eres tú.  
+L a flor más especial de mi jardín eres tú. 🌼  
+A sí como esta rosa, eres única e inolvidable.  
 ''';
 }

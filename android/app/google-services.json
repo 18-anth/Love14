@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "400702508835",
+    "firebase_url": "https://love14-a70e7-default-rtdb.firebaseio.com",
+    "project_id": "love14-a70e7",
+    "storage_bucket": "love14-a70e7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:400702508835:android:f138af7407c71aa551c696",
+        "android_client_info": {
+          "package_name": "love14.com.love14"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxbCr8JezSTmBWKLUcXKka0qHBz6O3d1A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

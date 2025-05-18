@@ -6,21 +6,22 @@ import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 
-class TulipanScreen extends StatefulWidget {
-  const TulipanScreen({super.key});
+class DienteDeLeonScreen extends StatefulWidget {
+  const DienteDeLeonScreen({super.key});
 
   @override
-  _TulipanScreenState createState() => _TulipanScreenState();
+  _DienteDeLeonScreenState createState() => _DienteDeLeonScreenState();
 }
 
-class _TulipanScreenState extends State<TulipanScreen>
+class _DienteDeLeonScreenState extends State<DienteDeLeonScreen>
     with SingleTickerProviderStateMixin {
   final List<String> _caracteristicas = [
-    "Como un tulipán al amanecer, eres la promesa de un día hermoso.",
-    "Delicada pero fuerte, así como tú enfrentas la vida.",
-    "Los tulipanes florecen en primavera, tú floreces en cada momento que sonríes.",
-    "Cada color de tulipán tiene un significado, pero tú los reúnes todos: amor, alegría, ternura.",
-    "Así como el tulipán se abre con el sol, mi corazón se abre cuando estás cerca.",
+    "Como un diente de león al viento, llevas esperanza dondequiera que vas.",
+    "Tu ternura se esparce como sus semillas: silenciosa, suave y transformadora.",
+    "Eres belleza en lo sencillo, luz en lo cotidiano.",
+    "Aunque parezcas frágil, resistes más de lo que imaginas.",
+    "Cada deseo que soplo, siempre termina llevándome a ti.",
+    "Así como el diente de león simboliza los sueños, tú eres el más hermoso de los míos.",
   ];
 
   @override
@@ -38,8 +39,8 @@ class _TulipanScreenState extends State<TulipanScreen>
                       height: constraints.maxHeight * 0.8,
                       child: const ModelViewer(
                         src:
-                            'https://storage.googleapis.com/love14flower/tulipan.glb', // cambia tu modelo aquí
-                        alt: "Un tulipán 3D",
+                            'https://storage.googleapis.com/love14flower/diente_de_leon.glb', // Actualiza aquí tu modelo
+                        alt: "Un diente de león 3D",
                         ar: true,
                         autoPlay: true,
                         autoRotate: true,
@@ -76,8 +77,8 @@ class _TulipanScreenState extends State<TulipanScreen>
                   child: SizedBox(
                     height: constraints.maxHeight * 0.8,
                     child: const ModelViewer(
-                      src: 'https://storage.googleapis.com/love14flower/tulipan.glb',
-                      alt: "Un tulipán 3D",
+                      src: 'https://storage.googleapis.com/love14flower/diente_de_leon.glb',
+                      alt: "Un diente de león 3D",
                       ar: true,
                       autoPlay: true,
                       autoRotate: true,
@@ -93,17 +94,21 @@ class _TulipanScreenState extends State<TulipanScreen>
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-              _buildPoemContainer(
-                context,
-                MediaQuery.of(context).size.height * 0.3,
-                MediaQuery.of(context).size.width * 0.9,
+                        _buildPoemContainer(
+                          context,
+                          MediaQuery.of(context).size.height * 0.3,
+                          MediaQuery.of(context).size.width * 0.9,
+                        ),
+                        const SizedBox(height: 20),
+                        _buildLoveCards(context),
+                      ],
+                    ),
+                  ),
+                ),
               ),
-              const SizedBox(height: 20),
-              _buildLoveCards(context),
-            ],),),),),
             ],
           );
-          },
+        },
       ),
     );
   }
@@ -127,8 +132,8 @@ class _TulipanScreenState extends State<TulipanScreen>
       ),
       borderGradient: LinearGradient(
         colors: [
-          Colors.orangeAccent.withOpacity(0.5),
-          Colors.deepOrange.withOpacity(0.2),
+          Colors.yellow.withOpacity(0.4),
+          Colors.orangeAccent.withOpacity(0.2),
         ],
       ),
       child: Padding(
@@ -166,7 +171,7 @@ class _TulipanScreenState extends State<TulipanScreen>
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
-                color: Colors.amber.shade100,
+                color: Colors.yellow.shade100,
                 margin: const EdgeInsets.symmetric(vertical: 8),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -189,16 +194,23 @@ class _TulipanScreenState extends State<TulipanScreen>
     final width = MediaQuery.of(context).size.width;
     if (width > 1000) return 32;
     if (width > 600) return 20;
-    return 22; // Tamaño para móviles
+    return 22;
   }
 
   String get _poema => '''
-T u dulzura florece como un tulipán en primavera.  
-U n detalle tuyo puede cambiar mi día entero.  
-L lenas de color mis pensamientos más grises.  
-I luminada estás siempre, incluso en lo simple.  
-P or eso, cuando pienso en belleza, pienso en ti.  
-A marte es como admirar un tulipán: sereno, profundo, inevitable.  
-N o hay jardín más perfecto que el que florece contigo. 🌷  
+D e todas las flores, tú eres la que más inspira.
+I luminada y ligera, como un diente de león al viento.
+E res un deseo que no necesita pedirse, porque ya se cumple con tu presencia.
+N ada en ti es ordinario; todo en ti es magia simple.
+T u sonrisa es mi primavera.
+E res la libertad que florece en el campo de mi corazón.
+
+D onde hay un soplo, hay esperanza. Donde estás tú, hay amor.
+E n cada pensamiento, vuelas sin que te llame.
+
+L os sueños más dulces tienen tu aroma.
+E res etérea y persistente, como los recuerdos hermosos.
+Ó jalo pudiera soplarte al viento... pero prefiero que te quedes aquí conmigo.
+N unca dejaré de admirar lo maravillosamente especial que eres. 🌼
 ''';
 }

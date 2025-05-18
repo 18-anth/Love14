@@ -1,8 +1,10 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:love14/Widgets/DienteLeonScreen.dart';
 import 'package:love14/Widgets/Flower3DScreen.dart';
 import 'package:love14/Widgets/Margarita_flower.dart';
+import 'package:love14/Widgets/RosaAmarillaScreen.dart';
 import 'package:love14/Widgets/Tulipan_flower.dart';
 import 'package:love14/utils/app_styles.dart';
 
@@ -22,6 +24,8 @@ class _FlowersState extends State<Flowers> {
     Flower3DScreen(),
     Margarita3DScreen(),
     TulipanScreen(),
+    RosaAmarillaScreen(),
+    DienteDeLeonScreen(),
   ];
 
   void _nextPage() {
