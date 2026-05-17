@@ -37,6 +37,7 @@ dependencies:
   provider: ^6.1.5
   google_fonts: ^6.2.1
   model_viewer_plus: ^1.9.3
+  flutter_3d_controller: ^2.3.0
   animated_text_kit: ^4.2.3
   glassmorphism: ^3.0.0
   universal_io: ^2.2.2

@@ -40,7 +40,7 @@ class _RosaAmarillaScreenState extends State<RosaAmarillaScreen>
                       child: ModelViewer(
                         src:
                             EnvLoader.get('ROSAAMARILLA') ??
-                            'https://raw.githubusercontent.com/18-anth/Love14/proyecto/assets/svg/rosa_amarilla.glb',
+                            'https://raw.githubusercontent.com/18-anth/Love14/main/assets/svg/rosa_amarilla.glb',
                         alt: "Una rosa amarilla 3D",
                         ar: true,
                         autoPlay: true,

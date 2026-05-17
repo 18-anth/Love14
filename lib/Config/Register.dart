@@ -6,6 +6,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:love14/Client/ClientScreen.dart';
 import 'package:love14/Config/LoginScreen.dart';
 import 'package:love14/admin/AdminScreen.dart';
+import '../Utils/app_colors.dart';
 
 class RegisterClientScreen extends StatefulWidget {
   const RegisterClientScreen({super.key});
@@ -18,8 +19,9 @@ class _RegisterClientScreenState extends State<RegisterClientScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final DatabaseReference _database =
-      FirebaseDatabase.instance.ref().child('Control/');
+  final DatabaseReference _database = FirebaseDatabase.instance.ref().child(
+    'Control/',
+  );
   bool _isLoading = false;
   final TextEditingController _nameController = TextEditingController();
 
@@ -45,8 +47,10 @@ class _RegisterClientScreenState extends State<RegisterClientScreen> {
 
   Future<void> _redirectToRole(String email) async {
     try {
-      final snapshot =
-          await _database.orderByChild('email').equalTo(email).get();
+      final snapshot = await _database
+          .orderByChild('email')
+          .equalTo(email)
+          .get();
       if (snapshot.exists) {
         final data = (snapshot.value as Map).values.first as Map;
         final role = data['role'];
@@ -95,11 +99,11 @@ class _RegisterClientScreenState extends State<RegisterClientScreen> {
 
     try {
       // Crear el usuario en Firebase Authentication
-      UserCredential userCredential =
-          await _auth.createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
+      UserCredential userCredential = await _auth
+          .createUserWithEmailAndPassword(
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim(),
+          );
 
       // Guardar la información del Client en Firebase Realtime Database
       if (userCredential.user != null) {
@@ -136,10 +140,11 @@ class _RegisterClientScreenState extends State<RegisterClientScreen> {
   Widget build(BuildContext context) {
     bool _obscureText = true;
     return Scaffold(
-      backgroundColor: const Color(0xfff3ece7),
+      backgroundColor: AppColors.lightBackground,
       appBar: PreferredSize(
-        preferredSize:
-            const Size.fromHeight(56.0), // Ajusta la altura según sea necesario
+        preferredSize: const Size.fromHeight(
+          56.0,
+        ), // Ajusta la altura según sea necesario
         child: Container(
           decoration: const BoxDecoration(
             borderRadius: BorderRadius.only(
@@ -147,10 +152,7 @@ class _RegisterClientScreenState extends State<RegisterClientScreen> {
               bottomRight: Radius.circular(40),
             ),
             gradient: LinearGradient(
-              colors: [
-                Color.fromARGB(255, 126, 53, 0),
-                Color.fromARGB(255, 126, 53, 0),
-              ],
+              colors: [AppColors.goldenHour, AppColors.goldenHour],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
@@ -172,7 +174,8 @@ class _RegisterClientScreenState extends State<RegisterClientScreen> {
               'Registrate',
               style: TextStyle(
                 fontWeight: FontWeight.w600,
-                color: Color(0xfff4f4f4),
+                color: AppColors.lightText,
+                fontFamily: 'Playfair',
               ),
             ),
             backgroundColor:
@@ -182,295 +185,348 @@ class _RegisterClientScreenState extends State<RegisterClientScreen> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              decoration: const BoxDecoration(
-                color: Colors.transparent,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      maxWidth: 400,
-                    ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: const Color(
-                              0xffe9f0f0), // Aquí se aplica el color al borde
+      body: Container(
+        decoration: const BoxDecoration(
+          color: AppColors.lightBackground,
+          image: DecorationImage(
+            image: AssetImage('assets/image/image.png'),
+            opacity: 0.1,
+            repeat: ImageRepeat.repeat,
+          ),
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                decoration: const BoxDecoration(color: Colors.transparent),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 400),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: const Color(
+                              0xffe9f0f0,
+                            ), // Aquí se aplica el color al borde
+                          ),
                         ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Container(
-                              decoration: const BoxDecoration(
-                                boxShadow: [
-                                  BoxShadow(
-                                    offset: Offset(-10, 10),
-                                    color: Color.fromARGB(80, 0, 0, 0),
-                                    blurRadius: 10,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Container(
+                                decoration: const BoxDecoration(
+                                  boxShadow: [
+                                    BoxShadow(
+                                      offset: Offset(-10, 10),
+                                      color: Color.fromARGB(80, 0, 0, 0),
+                                      blurRadius: 10,
+                                    ),
+                                    BoxShadow(
+                                      offset: Offset(10, -10),
+                                      color: Color.fromARGB(150, 255, 255, 255),
+                                      blurRadius: 10,
+                                    ),
+                                  ],
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(12.0),
+                                  child: Image.asset(
+                                    'assets/image/image.png',
+                                    height: 100,
+                                    width: 100,
+                                    fit: BoxFit.cover,
                                   ),
-                                  BoxShadow(
-                                    offset: Offset(10, -10),
-                                    color: Color.fromARGB(150, 255, 255, 255),
-                                    blurRadius: 10,
-                                  ),
-                                ],
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(12.0),
-                                child: Image.asset(
-                                  'assets/image/image.png',
-                                  height:
-                                      100,
-                                  width: 100,
-                                  fit: BoxFit.cover,
                                 ),
                               ),
-                            ),
-                            const SizedBox(height: 20),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                children: [
-                                  const Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Nombre',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Color.fromARGB(255, 0, 0, 0),
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 4),
-                                  TextField(
-                                    controller: _nameController,
-                                    decoration: const InputDecoration(
-                                      enabledBorder: UnderlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color:
-                                              Color.fromARGB(221, 199, 77, 11),
-                                        ), // Borde inferior negro
-                                      ),
-                                      focusedBorder: UnderlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Color.fromARGB(
-                                                221, 199, 77, 11),
-                                            width: 2),
-                                      ),
-                                      prefixIcon: Icon(
-                                        Icons.person_3_rounded,
-                                        color: Color.fromARGB(221, 199, 77, 11),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 16),
-                                  const Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Correo electrónico',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Color.fromARGB(255, 0, 0, 0),
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 4),
-                                  TextField(
-                                    controller: _emailController,
-                                    decoration: const InputDecoration(
-                                      enabledBorder: UnderlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color:
-                                              Color.fromARGB(221, 199, 77, 11),
-                                        ), // Borde inferior negro
-                                      ),
-                                      focusedBorder: UnderlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Color.fromARGB(
-                                                221, 199, 77, 11),
-                                            width: 2),
-                                      ),
-                                      prefixIcon: Icon(
-                                        Icons.email,
-                                        color: Color.fromARGB(221, 199, 77, 11),
-                                      ),
-                                    ),
-                                    keyboardType: TextInputType.emailAddress,
-                                  ),
-                                  const SizedBox(height: 16),
-                                  const Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Contraseña',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Color.fromARGB(255, 0, 0, 0),
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 4),
-                                  StatefulBuilder(builder: (context, setState) {
-                                    return TextField(
-                                      controller: _passwordController,
-                                      decoration: InputDecoration(
-                                        suffixIcon: IconButton(
-                                          icon: Icon(
-                                            _obscureText
-                                                ? Icons.visibility_off
-                                                : Icons.visibility,
-                                            color: const Color.fromARGB(
-                                                255, 126, 53, 0),
+                              const SizedBox(height: 20),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  children: [
+                                    const Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Nombre',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: AppColors.deepGreen,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: 'Playfair',
                                           ),
-                                          onPressed: () {
-                                            setState(() {
-                                              _obscureText =
-                                                  !_obscureText; // Alterna la visibilidad
-                                            });
-                                          },
                                         ),
-                                        enabledBorder:
-                                            const UnderlineInputBorder(
-                                          borderSide: BorderSide(
-                                            color: Color.fromARGB(
-                                                221, 199, 77, 11),
-                                          ), // Borde inferior negro
+                                      ],
+                                    ),
+                                    const SizedBox(height: 4),
+                                    TextField(
+                                      controller: _nameController,
+                                      decoration: InputDecoration(
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            15,
+                                          ),
+                                          borderSide: BorderSide.none,
                                         ),
-                                        focusedBorder:
-                                            const UnderlineInputBorder(
-                                          borderSide: BorderSide(
-                                              color: Color.fromARGB(
-                                                  221, 199, 77, 11),
-                                              width: 2),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            15,
+                                          ),
+                                          borderSide: const BorderSide(
+                                            color: AppColors.goldenHour,
+                                            width: 2,
+                                          ),
                                         ),
                                         prefixIcon: const Icon(
-                                          Icons.lock,
-                                          color:
-                                              Color.fromARGB(221, 199, 77, 11),
-                                        ),
-                                      ),
-                                      obscureText: _obscureText,
-                                    );
-                                  }),
-                                  const SizedBox(height: 24),
-                                  ElevatedButton(
-                                    onPressed: _registerClient,
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          const Color.fromARGB(255, 126, 53, 0),
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 8.0),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                        side: const BorderSide(
-                                          color: Color(0xfff3ece7),
-                                        ),
-                                      ),
-                                      elevation: 0,
-                                    ),
-                                    child: const Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Text(
-                                        'Registrarse',
-                                        style: TextStyle(
-                                          color: Color(0xfff3ece7),
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
+                                          Icons.person_3_rounded,
+                                          color: AppColors.warmBrown,
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 5),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const Text(
-                                        '¿Ya tienes una cuenta?',
-                                        style: TextStyle(
-                                          color: Colors.black87,
-                                        ),
-                                      ),
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pushReplacement(
-                                            PageRouteBuilder(
-                                              pageBuilder: (context, animation,
-                                                      secondaryAnimation) =>
-                                                  const LoginScreen(),
-                                              transitionsBuilder: (context,
-                                                  animation,
-                                                  secondaryAnimation,
-                                                  child) {
-                                                return SlideTransition(
-                                                  position: Tween<Offset>(
-                                                    begin:
-                                                        const Offset(1.0, 0.0),
-                                                    end: Offset.zero,
-                                                  ).animate(animation),
-                                                  child: child,
-                                                );
-                                              },
-                                            ),
-                                          );
-                                        },
-                                        child: const Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Text(
-                                            'Iniciar sesión',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600,
-                                              color: Color.fromARGB(
-                                                  221, 199, 77, 11),
-                                            ),
+                                    const SizedBox(height: 16),
+                                    const Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Correo electrónico',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: AppColors.deepGreen,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: 'Playfair',
                                           ),
                                         ),
-                                      )
-                                    ],
-                                  ),
-                                ],
+                                      ],
+                                    ),
+                                    const SizedBox(height: 4),
+                                    TextField(
+                                      controller: _emailController,
+                                      decoration: InputDecoration(
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            15,
+                                          ),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            15,
+                                          ),
+                                          borderSide: const BorderSide(
+                                            color: AppColors.goldenHour,
+                                            width: 2,
+                                          ),
+                                        ),
+                                        prefixIcon: const Icon(
+                                          Icons.email,
+                                          color: AppColors.warmBrown,
+                                        ),
+                                      ),
+                                      keyboardType: TextInputType.emailAddress,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    const Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Contraseña',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: AppColors.deepGreen,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: 'Playfair',
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 4),
+                                    StatefulBuilder(
+                                      builder: (context, setState) {
+                                        return TextField(
+                                          controller: _passwordController,
+                                          decoration: InputDecoration(
+                                            filled: true,
+                                            fillColor: Colors.white,
+                                            suffixIcon: IconButton(
+                                              icon: Icon(
+                                                _obscureText
+                                                    ? Icons.visibility_off
+                                                    : Icons.visibility,
+                                                color: AppColors.warmBrown,
+                                              ),
+                                              onPressed: () {
+                                                setState(() {
+                                                  _obscureText =
+                                                      !_obscureText; // Alterna la visibilidad
+                                                });
+                                              },
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                              borderSide: BorderSide.none,
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                              borderSide: const BorderSide(
+                                                color: AppColors.goldenHour,
+                                                width: 2,
+                                              ),
+                                            ),
+                                            prefixIcon: const Icon(
+                                              Icons.lock,
+                                              color: AppColors.warmBrown,
+                                            ),
+                                          ),
+                                          obscureText: _obscureText,
+                                        );
+                                      },
+                                    ),
+                                    const SizedBox(height: 24),
+                                    ElevatedButton(
+                                      onPressed: _registerClient,
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: AppColors.goldenHour,
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 15,
+                                          horizontal: 40,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            20,
+                                          ),
+                                        ),
+                                        elevation: 5,
+                                        shadowColor: AppColors.warmBrown,
+                                      ),
+                                      child: const Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.favorite,
+                                            color: AppColors.lightText,
+                                            size: 28,
+                                          ),
+                                          SizedBox(width: 15),
+                                          Text(
+                                            'Registrarse',
+                                            style: TextStyle(
+                                              color: AppColors.lightText,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'Playfair',
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            )
-                          ],
+                              const SizedBox(height: 5),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        const Text(
+                                          '¿Ya tienes una cuenta?',
+                                          style: TextStyle(
+                                            color: AppColors.deepGreen,
+                                            fontFamily: 'Playfair',
+                                          ),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(
+                                              context,
+                                            ).pushReplacement(
+                                              PageRouteBuilder(
+                                                pageBuilder:
+                                                    (
+                                                      context,
+                                                      animation,
+                                                      secondaryAnimation,
+                                                    ) => const LoginScreen(),
+                                                transitionsBuilder:
+                                                    (
+                                                      context,
+                                                      animation,
+                                                      secondaryAnimation,
+                                                      child,
+                                                    ) {
+                                                      return SlideTransition(
+                                                        position: Tween<Offset>(
+                                                          begin: const Offset(
+                                                            1.0,
+                                                            0.0,
+                                                          ),
+                                                          end: Offset.zero,
+                                                        ).animate(animation),
+                                                        child: child,
+                                                      );
+                                                    },
+                                              ),
+                                            );
+                                          },
+                                          child: const Row(
+                                            children: [
+                                              Icon(
+                                                Icons.local_florist,
+                                                color: AppColors.warmBrown,
+                                                size: 22,
+                                              ),
+                                              SizedBox(width: 5),
+                                              Text(
+                                                'Iniciar sesión',
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: AppColors.warmBrown,
+                                                  fontFamily: 'Playfair',
+                                                  decoration:
+                                                      TextDecoration.underline,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-            if (_isLoading)
-              const Center(
-                child: CircularProgressIndicator(),
-              ),
-          ],
+              if (_isLoading)
+                const Center(
+                  child: CircularProgressIndicator(color: AppColors.goldenHour),
+                ),
+            ],
+          ),
         ),
       ),
     );
