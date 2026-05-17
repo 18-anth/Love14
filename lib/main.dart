@@ -19,6 +19,9 @@ import 'package:love14/env_loader.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
+import 'dart:html' as html;
+// ignore: undefined_prefixed_name
+import 'dart:ui' as ui;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -83,9 +86,43 @@ class MyApp extends StatelessWidget {
       theme: themeController.lightTheme,
       darkTheme: themeController.darkTheme,
       themeMode: themeController.themeMode,
-      home: RefreshWrapper(isOnline: isOnline, seenOnboarding: seenOnboarding),
+      home: Stack(
+        children: [
+          RefreshWrapper(isOnline: isOnline, seenOnboarding: seenOnboarding),
+          if (kIsWeb) AutoPlayAudioWidget(), // Solo web
+        ],
+      ),
       debugShowCheckedModeBanner: false,
       routes: routes,
+    );
+  }
+}
+
+class AutoPlayAudioWidget extends StatelessWidget {
+  const AutoPlayAudioWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // Registrar el elemento HTML solo una vez
+    // ignore: undefined_prefixed_name
+    ui.platformViewRegistry.registerViewFactory('audio-element', (int viewId) {
+      final audio =
+          html.AudioElement()
+            ..src =
+                'https://storage.googleapis.com/love14flower/floresamarillas.mpeg'
+            ..autoplay = true
+            ..loop = true
+            ..controls = false
+            ..style.width = '0'
+            ..style.height = '0'
+            ..style.border = 'none';
+      return audio;
+    });
+
+    return const SizedBox(
+      width: 0,
+      height: 0,
+      child: HtmlElementView(viewType: 'audio-element'),
     );
   }
 }

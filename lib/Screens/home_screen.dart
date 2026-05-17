@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Importa Firebase Auth
+import 'package:love14/Config/LoginScreen.dart';
+
 import 'package:love14/Screens/Flowers_screen.dart';
 import 'package:love14/Screens/amapilla_screen.dart';
 import 'package:love14/Screens/favorites_screen.dart';
@@ -16,6 +19,8 @@ class MainNavigationScreen extends StatefulWidget {
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _selectedIndex = 0;
+  User? _currentUser;
+  bool _isLoading = true;
 
   static final List<Widget> _widgetOptions = <Widget>[
     AmapillaScreen(),
@@ -32,7 +37,38 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _checkUserLoggedIn();
+  }
+
+  void _checkUserLoggedIn() {
+    // Obtener el usuario actual de Firebase Auth
+    _currentUser = FirebaseAuth.instance.currentUser;
+
+    // Si no hay usuario logueado, redirigir al login
+    if (_currentUser == null) {
+      // Redirigir al login después de que se construya el widget
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.of(
+          context,
+        ).pushReplacement(MaterialPageRoute(builder: (_) => LoginScreen()));
+      });
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      // Mientras se verifica el usuario, mostrar loader o pantalla vacía
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    // Si el usuario está logueado, mostrar la pantalla principal
     final bool isLargeScreen = MediaQuery.of(context).size.width > 600;
 
     return Scaffold(
