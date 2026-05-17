@@ -1,11 +1,11 @@
 {
-    "name": "love14",
-    "short_name": "love14",
+    "name": "Love",
+    "short_name": "Love",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#FAF3E0",
     "theme_color": "#FAF3E0",
-    "description": "A new Flutter project.",
+    "description": "Este proyecto web está dedicado a ti, mi amor, un acto sincero y eterno de cariño.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
