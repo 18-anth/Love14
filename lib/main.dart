@@ -20,8 +20,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
 import 'dart:html' as html;
-// ignore: undefined_prefixed_name
-import 'dart:ui' as ui;
+import 'dart:ui_web' as ui_web;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -104,8 +103,9 @@ class AutoPlayAudioWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Registrar el elemento HTML solo una vez
-    // ignore: undefined_prefixed_name
-    ui.platformViewRegistry.registerViewFactory('audio-element', (int viewId) {
+    ui_web.platformViewRegistry.registerViewFactory('audio-element', (
+      int viewId,
+    ) {
       final audio = html.AudioElement()
         ..src =
             EnvLoader.get('AUDIO') ??
