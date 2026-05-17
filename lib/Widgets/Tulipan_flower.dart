@@ -80,7 +80,7 @@ class _TulipanScreenState extends State<TulipanScreen>
                     child: ModelViewer(
                       src:
                           EnvLoader.get('TULIPAN') ??
-                          'https://raw.githubusercontent.com/18-anth/Love14/proyecto/assets/svg/tulipan.glb',
+                          'https://raw.githubusercontent.com/18-anth/Love14/Main/assets/svg/tulipan.glb',
                       alt: "Un tulipán 3D",
                       ar: true,
                       autoPlay: true,

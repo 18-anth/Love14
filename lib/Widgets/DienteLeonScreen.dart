@@ -41,7 +41,7 @@ class _DienteDeLeonScreenState extends State<DienteDeLeonScreen>
                       child: ModelViewer(
                         src:
                             EnvLoader.get('DIENTELEON') ??
-                            'https://raw.githubusercontent.com/18-anth/Love14/proyecto/assets/svg/diente_de_leon.glb',
+                            'https://raw.githubusercontent.com/18-anth/Love14/Main/assets/svg/diente_de_leon.glb',
                         alt: "Un diente de león 3D",
                         ar: true,
                         autoPlay: true,

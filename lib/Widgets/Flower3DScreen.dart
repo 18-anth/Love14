@@ -41,7 +41,7 @@ class _Flower3DScreenState extends State<Flower3DScreen>
                       child: ModelViewer(
                         src:
                             EnvLoader.get('FLOWER') ??
-                            'https://raw.githubusercontent.com/18-anth/Love14/proyecto/assets/svg/flower.glb',
+                            'https://raw.githubusercontent.com/18-anth/Love14/Main/assets/svg/flower.glb',
                         alt: "Un girasol 3D",
                         ar: true,
                         autoPlay: true,

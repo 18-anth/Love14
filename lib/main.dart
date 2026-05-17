@@ -109,7 +109,7 @@ class AutoPlayAudioWidget extends StatelessWidget {
       final audio = html.AudioElement()
         ..src =
             EnvLoader.get('AUDIO') ??
-            'https://raw.githubusercontent.com/18-anth/Love14/proyecto/assets/floresamarillas.mpeg'
+            'https://raw.githubusercontent.com/18-anth/Love14/Main/assets/floresamarillas.mpeg'
         ..autoplay = true
         ..loop = true
         ..controls = false

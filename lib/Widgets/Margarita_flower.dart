@@ -33,7 +33,7 @@ class _Margarita3DScreenState extends State<Margarita3DScreen>
                       child: ModelViewer(
                         src:
                             EnvLoader.get('MARGARITA') ??
-                            'https://raw.githubusercontent.com/18-anth/Love14/proyecto/assets/svg/margarita.glb',
+                            'https://raw.githubusercontent.com/18-anth/Love14/Main/assets/svg/margarita.glb',
                         alt: "Una margarita 3D",
                         ar: true,
                         autoPlay: true,
