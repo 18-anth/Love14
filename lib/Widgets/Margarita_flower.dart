@@ -5,6 +5,7 @@ import 'package:glassmorphism/glassmorphism.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import '../env_loader.dart';
 
 class Margarita3DScreen extends StatefulWidget {
   const Margarita3DScreen({super.key});
@@ -29,8 +30,10 @@ class _Margarita3DScreenState extends State<Margarita3DScreen>
                   child: Center(
                     child: SizedBox(
                       height: constraints.maxHeight * 0.8,
-                      child: const ModelViewer(
-                        src: 'https://storage.googleapis.com/love14flower/margarita.glb',
+                      child: ModelViewer(
+                        src:
+                            EnvLoader.get('MARGARITA') ??
+                            'https://raw.githubusercontent.com/18-anth/Love14/proyecto/assets/svg/margarita.glb',
                         alt: "Una margarita 3D",
                         ar: true,
                         autoPlay: true,
@@ -73,8 +76,10 @@ class _Margarita3DScreenState extends State<Margarita3DScreen>
                 child: Center(
                   child: SizedBox(
                     height: constraints.maxHeight * 0.4,
-                    child: const ModelViewer(
-                      src: 'https://storage.googleapis.com/love14flower/margarita.glb',
+                    child: ModelViewer(
+                      src:
+                          EnvLoader.get('MARGARITA') ??
+                          'https://raw.githubusercontent.com/18-anth/Love14/proyecto/assets/svg/margarita.glb',
                       alt: "Una margarita 3D",
                       ar: true,
                       autoPlay: true,

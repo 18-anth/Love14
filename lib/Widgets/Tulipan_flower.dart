@@ -5,6 +5,7 @@ import 'package:glassmorphism/glassmorphism.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import '../env_loader.dart';
 
 class TulipanScreen extends StatefulWidget {
   const TulipanScreen({super.key});
@@ -36,9 +37,10 @@ class _TulipanScreenState extends State<TulipanScreen>
                   child: Center(
                     child: SizedBox(
                       height: constraints.maxHeight * 0.8,
-                      child: const ModelViewer(
+                      child: ModelViewer(
                         src:
-                            'https://storage.googleapis.com/love14flower/tulipan.glb', // cambia tu modelo aquí
+                            EnvLoader.get('TULIPAN') ??
+                            'https://raw.githubusercontent.com/18-anth/Love14/proyecto/assets/svg/tulipan.glb',
                         alt: "Un tulipán 3D",
                         ar: true,
                         autoPlay: true,
@@ -75,8 +77,10 @@ class _TulipanScreenState extends State<TulipanScreen>
                 child: Center(
                   child: SizedBox(
                     height: constraints.maxHeight * 0.8,
-                    child: const ModelViewer(
-                      src: 'https://storage.googleapis.com/love14flower/tulipan.glb',
+                    child: ModelViewer(
+                      src:
+                          EnvLoader.get('TULIPAN') ??
+                          'https://raw.githubusercontent.com/18-anth/Love14/proyecto/assets/svg/tulipan.glb',
                       alt: "Un tulipán 3D",
                       ar: true,
                       autoPlay: true,
@@ -93,17 +97,21 @@ class _TulipanScreenState extends State<TulipanScreen>
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-              _buildPoemContainer(
-                context,
-                MediaQuery.of(context).size.height * 0.3,
-                MediaQuery.of(context).size.width * 0.9,
+                        _buildPoemContainer(
+                          context,
+                          MediaQuery.of(context).size.height * 0.3,
+                          MediaQuery.of(context).size.width * 0.9,
+                        ),
+                        const SizedBox(height: 20),
+                        _buildLoveCards(context),
+                      ],
+                    ),
+                  ),
+                ),
               ),
-              const SizedBox(height: 20),
-              _buildLoveCards(context),
-            ],),),),),
             ],
           );
-          },
+        },
       ),
     );
   }
@@ -159,28 +167,27 @@ class _TulipanScreenState extends State<TulipanScreen>
       padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children:
-            _caracteristicas.map((mensaje) {
-              return Card(
-                elevation: 5,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+        children: _caracteristicas.map((mensaje) {
+          return Card(
+            elevation: 5,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            color: Colors.amber.shade100,
+            margin: const EdgeInsets.symmetric(vertical: 8),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                mensaje,
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  color: Colors.brown.shade700,
+                  fontStyle: FontStyle.italic,
                 ),
-                color: Colors.amber.shade100,
-                margin: const EdgeInsets.symmetric(vertical: 8),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    mensaje,
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      color: Colors.brown.shade700,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }

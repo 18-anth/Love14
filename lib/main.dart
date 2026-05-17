@@ -106,16 +106,16 @@ class AutoPlayAudioWidget extends StatelessWidget {
     // Registrar el elemento HTML solo una vez
     // ignore: undefined_prefixed_name
     ui.platformViewRegistry.registerViewFactory('audio-element', (int viewId) {
-      final audio =
-          html.AudioElement()
-            ..src =
-                'https://storage.googleapis.com/love14flower/floresamarillas.mpeg'
-            ..autoplay = true
-            ..loop = true
-            ..controls = false
-            ..style.width = '0'
-            ..style.height = '0'
-            ..style.border = 'none';
+      final audio = html.AudioElement()
+        ..src =
+            EnvLoader.get('AUDIO') ??
+            'https://raw.githubusercontent.com/18-anth/Love14/proyecto/assets/floresamarillas.mpeg'
+        ..autoplay = true
+        ..loop = true
+        ..controls = false
+        ..style.width = '0'
+        ..style.height = '0'
+        ..style.border = 'none';
       return audio;
     });
 
@@ -136,12 +136,11 @@ class AuthenticationWrapper extends StatelessWidget {
 
     if (user != null) {
       return FutureBuilder<DatabaseEvent>(
-        future:
-            FirebaseDatabase.instance
-                .ref()
-                .child('Control/')
-                .child(user.uid)
-                .once(),
+        future: FirebaseDatabase.instance
+            .ref()
+            .child('Control/')
+            .child(user.uid)
+            .once(),
         builder: (context, roleSnapshot) {
           if (roleSnapshot.connectionState == ConnectionState.waiting) {
             return const SplashScreen(seenOnboarding: true);

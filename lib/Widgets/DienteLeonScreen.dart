@@ -5,6 +5,7 @@ import 'package:glassmorphism/glassmorphism.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import '../env_loader.dart';
 
 class DienteDeLeonScreen extends StatefulWidget {
   const DienteDeLeonScreen({super.key});
@@ -37,9 +38,10 @@ class _DienteDeLeonScreenState extends State<DienteDeLeonScreen>
                   child: Center(
                     child: SizedBox(
                       height: constraints.maxHeight * 0.8,
-                      child: const ModelViewer(
+                      child: ModelViewer(
                         src:
-                            'https://storage.googleapis.com/love14flower/diente_de_leon.glb', // Actualiza aquí tu modelo
+                            EnvLoader.get('DIENTELEON') ??
+                            'https://raw.githubusercontent.com/18-anth/Love14/proyecto/assets/svg/diente_de_leon.glb',
                         alt: "Un diente de león 3D",
                         ar: true,
                         autoPlay: true,
@@ -76,8 +78,10 @@ class _DienteDeLeonScreenState extends State<DienteDeLeonScreen>
                 child: Center(
                   child: SizedBox(
                     height: constraints.maxHeight * 0.8,
-                    child: const ModelViewer(
-                      src: 'https://storage.googleapis.com/love14flower/diente_de_leon.glb',
+                    child: ModelViewer(
+                      src:
+                          EnvLoader.get('DIENTELEON') ??
+                          'https://raw.githubusercontent.com/18-anth/Love14/proyecto/assets/svg/diente_de_leon.glb',
                       alt: "Un diente de león 3D",
                       ar: true,
                       autoPlay: true,
@@ -164,28 +168,27 @@ class _DienteDeLeonScreenState extends State<DienteDeLeonScreen>
       padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children:
-            _caracteristicas.map((mensaje) {
-              return Card(
-                elevation: 5,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+        children: _caracteristicas.map((mensaje) {
+          return Card(
+            elevation: 5,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            color: Colors.yellow.shade100,
+            margin: const EdgeInsets.symmetric(vertical: 8),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                mensaje,
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  color: Colors.brown.shade700,
+                  fontStyle: FontStyle.italic,
                 ),
-                color: Colors.yellow.shade100,
-                margin: const EdgeInsets.symmetric(vertical: 8),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    mensaje,
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      color: Colors.brown.shade700,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
