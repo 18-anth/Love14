@@ -29,6 +29,29 @@ void main() async {
   bool hasConnection = await checkInternetConnection();
 
   if (hasConnection) {
+    // Validate required environment variables
+    final requiredEnvVars = [
+      'API_KEY',
+      'AUTH_DOMAIN',
+      'DATABASE_URL',
+      'PROJECT_ID',
+      'STORAGE_BUCKET',
+      'MESSAGING_SENDER_ID',
+      'APP_ID',
+      'MEASUREMENT_ID',
+    ];
+    
+    final missingVars = requiredEnvVars
+        .where((key) => EnvLoader.get(key) == null)
+        .toList();
+    
+    if (missingVars.isNotEmpty) {
+      throw Exception(
+        'Missing required environment variables: ${missingVars.join(", ")}. '
+        'Please check your assets/env.txt file.',
+      );
+    }
+
     await Firebase.initializeApp(
       options: FirebaseOptions(
         apiKey: EnvLoader.get('API_KEY')!,
