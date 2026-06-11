@@ -13,15 +13,18 @@ Este índice te ayudará a navegar los 6 documentos principales y entender cómo
 ## 📖 LOS 6 DOCUMENTOS
 
 ### 1. **LOVE14_2.0_RESUMEN_EJECUTIVO.md** ⭐ COMIENZA AQUÍ
+
 **Tiempo de lectura:** 10 minutos
 
 **Contenido:**
+
 - Overview de todo el plan
 - Métricas clave (revenue, users, viralidad)
 - Próximos pasos inmediatos (hoy, esta semana)
 - Quick reference de decisiones
 
 **Cuándo leer:**
+
 - Primero (para entender el panorama general)
 - Cuando necesites recordar la visión
 - Antes de cada reunión/llamada
@@ -31,9 +34,11 @@ Este índice te ayudará a navegar los 6 documentos principales y entender cómo
 ---
 
 ### 2. **LOVE14_2.0_ESTRATEGIA_STARTUP.md** 📊 ESTRATEGIA PROFUNDA
+
 **Tiempo de lectura:** 45 minutos
 
 **Contenido:**
+
 - 15 preguntas de negocio respondidas
 - Monetización (3 tiers de precio)
 - Viralidad (cómo crece exponencialmente)
@@ -43,6 +48,7 @@ Este índice te ayudará a navegar los 6 documentos principales y entender cómo
 - Metrices AARRR
 
 **Cuándo leer:**
+
 - Después del resumen ejecutivo
 - Cuando necesites justificar decisiones
 - Cuando hables con inversores/socios
@@ -53,9 +59,11 @@ Este índice te ayudará a navegar los 6 documentos principales y entender cómo
 ---
 
 ### 3. **LOVE14_2.0_ARCHITECTURE.md** 🏗️ DISEÑO TÉCNICO
+
 **Tiempo de lectura:** 60 minutos
 
 **Contenido:**
+
 - Stack tecnológico detallado
 - Arquitectura Firebase (collections, security rules)
 - Stripe integration (flujo de pagos)
@@ -65,6 +73,7 @@ Este índice te ayudará a navegar los 6 documentos principales y entender cómo
 - Estructura de carpetas (lib/ organization)
 
 **Cuándo leer:**
+
 - Antes de empezar a codificar
 - Como referencia mientras programas
 - Cuando hagas code review
@@ -75,9 +84,11 @@ Este índice te ayudará a navegar los 6 documentos principales y entender cómo
 ---
 
 ### 4. **LOVE14_2.0_2WEEK_PLAN.md** ⏱️ PLAN DE 14 DÍAS
+
 **Tiempo de lectura:** 40 minutos (pero consultarás constantemente)
 
 **Contenido:**
+
 - Desglose diario de tareas Week 1
 - Desglose diario de tareas Week 2
 - Horas estimadas por tarea
@@ -87,6 +98,7 @@ Este índice te ayudará a navegar los 6 documentos principales y entender cómo
 - Qué commitear cada día
 
 **Cuándo usar:**
+
 - **Diariamente** (es tu plan de trabajo)
 - **Mañana (mañana, no hoy):** Empieza Week 1 Day 1
 - Al planificar tu día
@@ -97,9 +109,11 @@ Este índice te ayudará a navegar los 6 documentos principales y entender cómo
 ---
 
 ### 5. **LOVE14_2.0_METRICAS.md** 📈 MÉTRICAS & DASHBOARDS
+
 **Tiempo de lectura:** 50 minutos
 
 **Contenido:**
+
 - 8 fórmulas críticas (CAC, LTV, k-factor, etc)
 - Dashboards diarios/semanales/mensuales
 - Análisis de cohorts
@@ -109,6 +123,7 @@ Este índice te ayudará a navegar los 6 documentos principales y entender cómo
 - Templates para spreadsheet
 
 **Cuándo usar:**
+
 - **Diariamente:** Ingresa métricas en spreadsheet
 - **Semanalmente:** Corre análisis cohort
 - **Mensualmente:** Full review con todas las fórmulas
@@ -119,9 +134,11 @@ Este índice te ayudará a navegar los 6 documentos principales y entender cómo
 ---
 
 ### 6. **LOVE14_2.0_ROADMAP_12MESES.md** 🗺️ PLAN ANUAL
+
 **Tiempo de lectura:** 60 minutos
 
 **Contenido:**
+
 - Q1 (Meses 1-3): MVP + Launch
 - Q2 (Meses 4-6): Scale + Monetize
 - Q3 (Meses 7-9): Retention + Expansion
@@ -132,6 +149,7 @@ Este índice te ayudará a navegar los 6 documentos principales y entender cómo
 - Decision checkpoints y failure modes
 
 **Cuándo usar:**
+
 - A fin de mes (evaluar si on-track)
 - Cuando planificar el próximo mes
 - Quarterly planning sessions
@@ -142,9 +160,11 @@ Este índice te ayudará a navegar los 6 documentos principales y entender cómo
 ---
 
 ### 7. **LOVE14_2.0_FAQs.md** ❓ PREGUNTAS FRECUENTES
+
 **Tiempo de lectura:** 45 minutos (o consúltalo cuando necesites)
 
 **Contenido:**
+
 - 30+ preguntas técnicas respondidas
 - 10+ preguntas de monetización
 - 5+ preguntas de growth
@@ -153,6 +173,7 @@ Este índice te ayudará a navegar los 6 documentos principales y entender cómo
 - Preguntas de competencia
 
 **Cuándo usar:**
+
 - Cuando tengas una pregunta específica
 - Antes de tomar una decisión grande
 - Cuando estés confundido sobre algo
@@ -163,9 +184,11 @@ Este índice te ayudará a navegar los 6 documentos principales y entender cómo
 ---
 
 ### 8. **LOVE14_2.0_LAUNCH_CHECKLIST.md** ✅ CHECKLIST DE LANZAMIENTO
+
 **Tiempo de lectura:** 30 minutos (pero usarás antes de launch)
 
 **Contenido:**
+
 - Pre-launch checklist (Week 4 Month 1)
 - Legal & policy requirements
 - Technical setup validation
@@ -176,6 +199,7 @@ Este índice te ayudará a navegar los 6 documentos principales y entender cómo
 - Success criteria
 
 **Cuándo usar:**
+
 - **Semana 4 del Mes 1:** Empieza a usar
 - Antes de cada submission a stores
 - Noche antes del launch (para nervios)
@@ -218,14 +242,17 @@ Este índice te ayudará a navegar los 6 documentos principales y entender cómo
 ### Escenario 4: "Estoy programando, necesito ayuda con X"
 
 **Si es técnico:**
+
 - Consulta **LOVE14_2.0_ARCHITECTURE.md** (sección relevante)
 - Consulta **LOVE14_2.0_FAQs.md** (preguntas técnicas)
 
 **Si es decisión de producto:**
+
 - Consulta **LOVE14_2.0_ESTRATEGIA_STARTUP.md**
 - Consulta **LOVE14_2.0_FAQs.md** (preguntas operacionales)
 
 **Si es métrica/KPI:**
+
 - Consulta **LOVE14_2.0_METRICAS.md**
 
 ---
@@ -266,19 +293,23 @@ OPERATIONAL LAYER (Day-to-day execution)
 
 ## 🚀 QUICK START (Hoy)
 
-### Si tienes 15 minutos:
+### Si tienes 15 minutos
+
 - Lee LOVE14_2.0_RESUMEN_EJECUTIVO.md
 
-### Si tienes 1 hora:
+### Si tienes 1 hora
+
 - Lee LOVE14_2.0_RESUMEN_EJECUTIVO.md
 - Skim LOVE14_2.0_ARCHITECTURE.md
 
-### Si tienes 3 horas:
+### Si tienes 3 horas
+
 - Lee LOVE14_2.0_RESUMEN_EJECUTIVO.md
 - Lee LOVE14_2.0_ARQUITECTURA.md
 - Lee LOVE14_2.0_2WEEK_PLAN.md
 
-### Si tienes todo el día:
+### Si tienes todo el día
+
 - Lee todos los documentos en este orden:
   1. RESUMEN_EJECUTIVO
   2. ESTRATEGIA_STARTUP
@@ -296,25 +327,30 @@ OPERATIONAL LAYER (Day-to-day execution)
 ## 📝 NOTAS IMPORTANTES
 
 ### 1. Estos documentos son vivos
+
 - Actualiza los FAQs cuando descubras nueva información
 - Ajusta roadmap cuando cambien circunstancias
 - Refina arquitectura cuando entiendas mejor el problema
 
 ### 2. No necesitas memorizar todo
+
 - Usa CMD+F / CTRL+F para buscar
 - Crea tu propia cheatsheet si necesitas
 
 ### 3. Algunos números son conservadores
+
 - Proyecciones asumen 2-3% conversion (realista)
 - CAC asume $2-3 (muy optimista si solo pagas ads)
 - Pero si viral loop funciona → todo es conservador
 
 ### 4. Esto no es la verdad absoluta
+
 - Esto es educación basada en 20+ años de startup patterns
 - Tu mercado específico puede diferir
 - Mide, aprende, itera
 
 ### 5. Mantén el enfoque
+
 - No intentes leer todo hoy
 - Comienza con resumen + arquitectura
 - Deep dive en otros cuando sea relevante
@@ -323,7 +359,8 @@ OPERATIONAL LAYER (Day-to-day execution)
 
 ## 🔄 CICLO DE TRABAJO RECOMENDADO
 
-### DIARIA (10 min):
+### DIARIA (10 min)
+
 ```
 ├─ Abre LOVE14_2.0_2WEEK_PLAN.md
 ├─ Lee tareas de hoy
@@ -332,7 +369,8 @@ OPERATIONAL LAYER (Day-to-day execution)
 └─ Actualiza status en plan
 ```
 
-### SEMANALMENTE (30 min):
+### SEMANALMENTE (30 min)
+
 ```
 ├─ Abre LOVE14_2.0_METRICAS.md
 ├─ Ingresa datos de semana
@@ -341,7 +379,8 @@ OPERATIONAL LAYER (Day-to-day execution)
 └─ Decide optimizaciones
 ```
 
-### MENSUALMENTE (2 horas):
+### MENSUALMENTE (2 horas)
+
 ```
 ├─ Abre LOVE14_2.0_ROADMAP_12MESES.md
 ├─ Revisa targets vs actuals
@@ -350,7 +389,8 @@ OPERATIONAL LAYER (Day-to-day execution)
 └─ Planifica próximo mes
 ```
 
-### TRIMESTRALMENTE (4 horas):
+### TRIMESTRALMENTE (4 horas)
+
 ```
 ├─ Full review de LOVE14_2.0_ROADMAP_12MESES.md
 ├─ Re-read LOVE14_2.0_ESTRATEGIA_STARTUP.md
@@ -415,6 +455,7 @@ Si quieres compartir con tu equipo/socios:
 ## 📌 FINAL THOUGHTS
 
 Tienes:
+
 - ✅ Análisis de negocio completo
 - ✅ Arquitectura técnica validada
 - ✅ Plan de 2 semanas para empezar
