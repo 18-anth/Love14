@@ -52,7 +52,7 @@ class SurpriseService {
 
       final flower = Flower(
         type: _parseFlowerType(flowerType),
-        quantity: flowerIds.length,
+        quantity: flowerIds.length, id: '',
       );
 
       final surprise = Surprise(

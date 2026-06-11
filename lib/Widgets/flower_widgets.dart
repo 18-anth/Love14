@@ -32,7 +32,7 @@ class FlowerSelector extends StatelessWidget {
           spacing: 12,
           runSpacing: 12,
           children: FlowerType.values.map((flowerType) {
-            final flower = Flower(type: flowerType);
+            final flower = Flower(type: flowerType, id: '');
             final isSelected = selectedFlower.type == flowerType;
 
             return GestureDetector(

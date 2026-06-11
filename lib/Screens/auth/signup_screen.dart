@@ -30,7 +30,8 @@ class _SignupScreenState extends State<SignupScreen> {
 
   bool _obscurePassword1 = true;
   bool _obscurePassword2 = true;
-  bool _obscurePassword2Confirm = true;
+  // TODO: Use for password confirmation field if implemented
+  // bool _obscurePassword2Confirm = true;
 
   @override
   void dispose() {

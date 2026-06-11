@@ -149,7 +149,8 @@ class _MySurprisesScreenState extends State<MySurprisesScreen>
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SurpriseViewScreen(surpriseId: surpriseId),
+        builder: (context) =>
+            SurpriseViewScreen(surpriseId: surpriseId, isPublic: false,),
       ),
     );
   }

@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart' as fa;
 import 'package:love14/models/couple_model.dart';
 import 'package:love14/models/gift_model.dart';
 import 'package:love14/models/payment_model.dart';

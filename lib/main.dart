@@ -121,6 +121,7 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       routes: routes,
+      onGenerateRoute: (settings) => generateRoute(settings),
     );
   }
 }

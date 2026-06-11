@@ -99,6 +99,7 @@ class Flower {
     this.color,
     this.quantity = 1,
     DateTime? addedAt,
+    required String id,
   }) : addedAt = addedAt ?? DateTime.now();
 
   Map<String, dynamic> toMap() {
@@ -118,7 +119,10 @@ class Flower {
       ),
       color: map['color'],
       quantity: map['quantity'] ?? 1,
-      addedAt: DateTime.parse(map['addedAt'] ?? DateTime.now().toIso8601String()),
+      addedAt: DateTime.parse(
+        map['addedAt'] ?? DateTime.now().toIso8601String(),
+      ),
+      id: '',
     );
   }
 
@@ -133,6 +137,7 @@ class Flower {
       color: color ?? this.color,
       quantity: quantity ?? this.quantity,
       addedAt: addedAt ?? this.addedAt,
+      id: '',
     );
   }
 }

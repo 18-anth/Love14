@@ -1,7 +1,7 @@
-import 'dart:async';
+// import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
+// import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:love14/admin/Home/Upload.dart';
 
@@ -13,10 +13,11 @@ class AdminScreen extends StatefulWidget {
 }
 
 class _AdminScreenState extends State<AdminScreen> {
-  Timer? _timerADMIN;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  // TODO: Implement admin functionality
+  // Timer? _timerADMIN;
+  // final FirebaseAuth _auth = FirebaseAuth.instance;
   final User? user = FirebaseAuth.instance.currentUser;
-  late DatabaseReference _databaseRef;
+  // late DatabaseReference _databaseRef;
   String email = 'correo@ejemplo.com';
 
   @override

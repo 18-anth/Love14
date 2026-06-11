@@ -95,7 +95,7 @@ class _MyPrisesScreenState extends State<MyPrisesScreen> {
                       MaterialPageRoute(
                         builder: (context) => SurpriseViewScreen(
                           surpriseId: surprise.surpriseId,
-                          isPublicView: false,
+                          isPublic: false,
                         ),
                       ),
                     );

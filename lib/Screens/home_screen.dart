@@ -7,6 +7,7 @@ import 'package:love14/Screens/amapilla_screen.dart';
 import 'package:love14/Screens/favorites_screen.dart';
 import 'package:love14/Screens/notifications_screen.dart';
 import 'package:love14/Screens/profile_screen.dart';
+import 'package:love14/Screens/surprise_history_screen.dart';
 import 'package:love14/Widgets/bottom_nav_bar.dart';
 import 'package:love14/Widgets/custom_navigation_rail.dart';
 
@@ -27,6 +28,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     FavoritesScreen(),
     Flowers(),
     NotificationsScreen(),
+    const SurpriseHistoryScreen(),
     ProfileScreen(),
   ];
 

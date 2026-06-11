@@ -49,6 +49,13 @@ class BottomNavBar extends StatelessWidget {
           label: 'Momentos',
         ),
 
+        // Sorpresas
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.card_giftcard_outlined),
+          activeIcon: Icon(Icons.card_giftcard),
+          label: 'Sorpresas',
+        ),
+
         // Nuestra Historia
         BottomNavigationBarItem(
           icon: Icon(Icons.person),

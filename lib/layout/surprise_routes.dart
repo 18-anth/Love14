@@ -31,7 +31,7 @@ class SurpriseRoutes {
         return MaterialPageRoute(
           builder: (_) => SurpriseViewScreen(
             surpriseId: args['surpriseId'] as String,
-            isPublicView: args['isPublicView'] as bool? ?? true,
+            isPublic: args['isPublic'] as bool? ?? false,
           ),
           settings: settings,
         );
