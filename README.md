@@ -23,12 +23,14 @@ Una aplicación Flutter romántica y multiplatforma que combina poesía, flores 
 ## ✨ Características
 
 ### 🎭 Sistema de Autenticación
+
 - **Login y Registro** con Firebase Authentication
 - **Recuperación de contraseña** vía correo electrónico
 - **Roles de usuario**: Cliente y Administrador
 - **Persistencia de sesión** con SharedPreferences
 
 ### 🌸 Contenido Romántico
+
 - **Galería de Flores 3D Interactivas**
   - Diente de León (Dandelion)
   - Flor Amarilla (Yellow Flower)
@@ -39,11 +41,13 @@ Una aplicación Flutter romántica y multiplatforma que combina poesía, flores 
 - **Favoritos**: Guardar poemas y flores preferidas
 
 ### 🎵 Multimedia
+
 - **Música de Fondo Automática** en la web
 - **Reproducción de Video** integrada
 - **Gestor de Imágenes** con soporte para subidas
 
 ### 🎨 Interfaz de Usuario
+
 - **Temas Claro y Oscuro** personalizables
 - **Diseño Responsivo** para todos los dispositivos
 - **Animaciones Suaves** con Flutter Animate
@@ -51,11 +55,13 @@ Una aplicación Flutter romántica y multiplatforma que combina poesía, flores 
 - **Navegación Intuitiva** con barra inferior
 
 ### 🔗 Conectividad
+
 - **Soporte Offline** con pantalla de desconexión
 - **Detección de Conectividad** en tiempo real
 - **Sincronización Automática** cuando la conexión se restaura
 
 ### 👥 Funciones Administrativas
+
 - **Panel de Control** para administradores
 - **Gestión de Contenido**
 - **Carga de Archivos** (imágenes, videos)
@@ -70,10 +76,10 @@ Una aplicación Flutter romántica y multiplatforma que combina poesía, flores 
 - **Firebase Project**: Para configuración de Backend
 - **Node.js**: Para algunas herramientas de desarrollo
 
-### Requisitos por Plataforma:
+### Requisitos por Plataforma
 
 | Plataforma | Requisitos |
-|-----------|-----------|
+| ----------- | ----------- |
 | **Android** | Android SDK 21+, Gradle |
 | **iOS** | Xcode 12+, CocoaPods, iOS 11+ |
 | **Web** | Chrome/Firefox (Dart SDK Web) |
@@ -86,18 +92,22 @@ Una aplicación Flutter romántica y multiplatforma que combina poesía, flores 
 ## 🚀 Instalación
 
 ### 1. Clonar el Repositorio
+
 ```bash
 git clone https://github.com/18-anth/Love14.git
 cd Love14
 ```
 
 ### 2. Instalar Dependencias de Flutter
+
 ```bash
 flutter pub get
 ```
 
 ### 3. Configurar Variables de Entorno
+
 Crea un archivo `assets/env.txt` con tus credenciales de Firebase:
+
 ```env
 API_KEY=tu_api_key
 AUTH_DOMAIN=tu_auth_domain
@@ -111,6 +121,7 @@ AUDIO=tu_url_audio
 ```
 
 ### 4. Configurar Google Services (Android/iOS)
+
 - Descarga `google-services.json` de Firebase Console
 - Colócalo en `android/app/`
 - También configura `GoogleService-Info.plist` para iOS en `ios/Runner/`
@@ -118,31 +129,37 @@ AUDIO=tu_url_audio
 ### 5. Ejecutar la Aplicación
 
 **Web:**
+
 ```bash
 flutter run -d chrome
 ```
 
 **Android:**
+
 ```bash
 flutter run
 ```
 
 **iOS:**
+
 ```bash
 flutter run -d ios
 ```
 
 **Windows:**
+
 ```bash
 flutter run -d windows
 ```
 
 **Linux:**
+
 ```bash
 flutter run -d linux
 ```
 
 **macOS:**
+
 ```bash
 flutter run -d macos
 ```
@@ -161,6 +178,7 @@ flutter run -d macos
    - **Hosting** (opcional, para web)
 
 3. Configura las reglas de seguridad en Realtime Database:
+
 ```json
 {
   "rules": {
@@ -183,6 +201,7 @@ flutter run -d macos
 ### Variables de Entorno
 
 Las variables se cargan desde `assets/env.txt` mediante la clase `EnvLoader`:
+
 - **API_KEY**: Clave de API de Firebase
 - **AUTH_DOMAIN**: Dominio de autenticación
 - **DATABASE_URL**: URL de Realtime Database
@@ -197,7 +216,7 @@ Las variables se cargan desde `assets/env.txt` mediante la clase `EnvLoader`:
 
 ## 📁 Estructura del Proyecto
 
-```
+```bash
 lib/
 ├── main.dart                          # Punto de entrada principal
 ├── env_loader.dart                    # Cargador de variables de entorno
@@ -270,10 +289,10 @@ lib/
 
 ## 📚 Dependencias
 
-### Dependencias Principales:
+### Dependencias Principales
 
 | Paquete | Versión | Propósito |
-|---------|---------|----------|
+| --------- | --------- | ---------- |
 | `flutter` | SDK | Framework principal |
 | `provider` | ^6.1.5 | Gestión de estado |
 | `firebase_core` | ^3.13.0 | Backend Firebase |
@@ -296,7 +315,7 @@ lib/
 | `animated_text_kit` | ^4.2.3 | Animaciones de texto |
 | `share_plus` | ^11.0.0 | Compartir contenido |
 
-### Dependencias de Desarrollo:
+### Dependencias de Desarrollo
 
 ```yaml
 flutter_test:
@@ -331,6 +350,7 @@ flutter_lints: ^5.0.0
 ### Acceso Administrativo
 
 Los administradores pueden:
+
 - Cargar nuevas flores 3D
 - Añadir y editar poemas
 - Gestionar usuarios
@@ -342,7 +362,7 @@ Los administradores pueden:
 
 ### Patrón de Diseño: MVC + Provider
 
-```
+```bash
 ┌─────────────────────────────────────┐
 │           UI Layer (Widgets)         │
 │  Screens, Widgets, Views             │
@@ -371,7 +391,7 @@ ChangeNotifierProvider(create: (_) => PoemController())
 
 ### Flujo de Datos
 
-```
+```bash
 Firebase
     ↓
 Provider Controllers
@@ -420,7 +440,7 @@ Firebase (updates)
 ## 📱 Plataformas Soportadas
 
 | Plataforma | Estado | Requisitos |
-|-----------|--------|-----------|
+| ----------- | -------- | ----------- |
 | **Android** | ✅ Completo | API 21+ |
 | **iOS** | ✅ Completo | iOS 11+ |
 | **Web** | ✅ Completo | Chrome/Firefox |
@@ -435,6 +455,7 @@ Firebase (updates)
 ### Reportar Bugs
 
 Si encuentras un bug, por favor abre un issue en GitHub con:
+
 - Descripción del problema
 - Pasos para reproducir
 - Versión de Flutter y dispositivo
@@ -458,7 +479,8 @@ Este proyecto está bajo licencia privada. Todos los derechos reservados.
 
 ## 👨‍💻 Autor
 
-**Anthony Estuardo**
+## **Anthony Estuardo**
+
 - GitHub: [@18-anth](https://github.com/18-anth)
 - Repositorio: [Love14](https://github.com/18-anth/Love14)
 

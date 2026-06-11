@@ -1,26 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:love14/Client/ClientScreen.dart';
-import 'package:love14/Config/LoginScreen.dart';
 import 'package:love14/Controllers/theme_controller.dart';
-import 'package:love14/Router/routes.dart';
-import 'package:love14/Views/RefreshWrapper.dart';
-import 'package:love14/Views/RestartWidget.dart';
-import 'package:love14/Views/connectivity_service.dart';
-import 'package:love14/Views/offline_screen.dart';
-import 'package:love14/Views/splash_screen.dart';
-import 'package:love14/Widgets/PullToRefreshWrapper.dart';
-import 'package:love14/admin/AdminScreen.dart';
-import 'package:love14/controllers/poem_controller.dart';
 import 'package:love14/env_loader.dart';
+import 'package:love14/providers/auth_provider.dart';
+import 'package:love14/services/firebase_service.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
-import 'dart:html' as html;
-import 'dart:ui_web' as ui_web;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
