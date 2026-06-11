@@ -1,83 +1,105 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:love14/Client/ClientScreen.dart';
+import 'package:love14/Config/LoginScreen.dart';
 import 'package:love14/Controllers/theme_controller.dart';
+import 'package:love14/Router/routes.dart';
+import 'package:love14/Views/RefreshWrapper.dart';
+import 'package:love14/Views/RestartWidget.dart';
+import 'package:love14/Views/connectivity_service.dart';
+import 'package:love14/Views/offline_screen.dart';
+import 'package:love14/Views/splash_screen.dart';
+import 'package:love14/Widgets/PullToRefreshWrapper.dart';
+import 'package:love14/admin/AdminScreen.dart';
+import 'package:love14/controllers/poem_controller.dart';
 import 'package:love14/env_loader.dart';
-import 'package:love14/providers/auth_provider.dart';
-import 'package:love14/services/firebase_service.dart';
-import 'package:love14/screens/auth/login_screen.dart';
-import 'package:love14/screens/auth/signup_screen.dart';
-import 'package:love14/screens/home/home_screen.dart';
+import 'package:love14/Features/Surprises/Providers/surprise_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
+import 'dart:html' as html;
+import 'dart:ui_web' as ui_web;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Load environment variables
   await EnvLoader.loadEnv();
 
-  // Validate required environment variables
-  final requiredEnvVars = [
-    'API_KEY',
-    'AUTH_DOMAIN',
-    'PROJECT_ID',
-    'STORAGE_BUCKET',
-    'MESSAGING_SENDER_ID',
-    'APP_ID',
-  ];
+  bool hasConnection = await checkInternetConnection();
 
-  final missingVars = requiredEnvVars
-      .where((key) => EnvLoader.get(key) == null)
-      .toList();
+  if (hasConnection) {
+    // Validate required environment variables
+    final requiredEnvVars = [
+      'API_KEY',
+      'AUTH_DOMAIN',
+      'DATABASE_URL',
+      'PROJECT_ID',
+      'STORAGE_BUCKET',
+      'MESSAGING_SENDER_ID',
+      'APP_ID',
+      'MEASUREMENT_ID',
+    ];
 
-  if (missingVars.isNotEmpty) {
-    throw Exception(
-      'Missing required environment variables: ${missingVars.join(", ")}. '
-      'Please check your assets/env.txt file.',
+    final missingVars = requiredEnvVars
+        .where((key) => EnvLoader.get(key) == null)
+        .toList();
+
+    if (missingVars.isNotEmpty) {
+      throw Exception(
+        'Missing required environment variables: ${missingVars.join(", ")}. '
+        'Please check your assets/env.txt file.',
+      );
+    }
+
+    await Firebase.initializeApp(
+      options: FirebaseOptions(
+        apiKey: EnvLoader.get('API_KEY')!,
+        authDomain: EnvLoader.get('AUTH_DOMAIN')!,
+        databaseURL: EnvLoader.get('DATABASE_URL')!,
+        projectId: EnvLoader.get('PROJECT_ID')!,
+        storageBucket: EnvLoader.get('STORAGE_BUCKET')!,
+        messagingSenderId: EnvLoader.get('MESSAGING_SENDER_ID')!,
+        appId: EnvLoader.get('APP_ID')!,
+        measurementId: EnvLoader.get('MEASUREMENT_ID')!,
+      ),
     );
+
+    if (!kIsWeb) {
+      FirebaseDatabase.instance.setPersistenceEnabled(true);
+    }
   }
 
-  // Initialize Firebase
-  await Firebase.initializeApp(
-    options: FirebaseOptions(
-      apiKey: EnvLoader.get('API_KEY')!,
-      authDomain: EnvLoader.get('AUTH_DOMAIN')!,
-      projectId: EnvLoader.get('PROJECT_ID')!,
-      storageBucket: EnvLoader.get('STORAGE_BUCKET')!,
-      messagingSenderId: EnvLoader.get('MESSAGING_SENDER_ID')!,
-      appId: EnvLoader.get('APP_ID')!,
-    ),
-  );
-
-  // Initialize FirebaseService
-  FirebaseService().initialize();
-
-  // Get shared preferences
-  final prefs = await SharedPreferences.getInstance();
-  final seenOnboarding = prefs.getBool('seenOnboarding') ?? false;
+  final pref = await SharedPreferences.getInstance();
+  final seenOnboarding = pref.getBool('seenOnboarding') ?? false;
 
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeController()),
-        ChangeNotifierProvider(create: (_) => AuthProvider()..initialize()),
+        ChangeNotifierProvider(create: (_) => PoemController()),
+        ChangeNotifierProvider(create: (_) {
+          final provider = SurpriseProvider();
+          return provider;
+        }),
       ],
-      child: MyApp(seenOnboarding: seenOnboarding),
+      child: RestartWidget(
+        child: MyApp(seenOnboarding: seenOnboarding, isOnline: hasConnection),
+      ),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
   final bool seenOnboarding;
+  final bool isOnline;
 
-  const MyApp({super.key, required this.seenOnboarding});
+  const MyApp({super.key, this.seenOnboarding = false, required this.isOnline});
 
   @override
   Widget build(BuildContext context) {
     final themeController = Provider.of<ThemeController>(context);
-
-    // Set system UI style
     WidgetsBinding.instance.addPostFrameCallback((_) {
       SystemChrome.setSystemUIOverlayStyle(
         const SystemUiOverlayStyle(
@@ -86,69 +108,101 @@ class MyApp extends StatelessWidget {
         ),
       );
     });
-
     return MaterialApp(
-      title: 'Love14',
+      title: 'Flores Amarillas',
       theme: themeController.lightTheme,
       darkTheme: themeController.darkTheme,
       themeMode: themeController.themeMode,
+      home: Stack(
+        children: [
+          RefreshWrapper(isOnline: isOnline, seenOnboarding: seenOnboarding),
+          if (kIsWeb) AutoPlayAudioWidget(), // Solo web
+        ],
+      ),
       debugShowCheckedModeBanner: false,
-      home: const AuthenticationWrapper(),
+      routes: routes,
     );
   }
 }
 
-/// Decides which screen to show based on auth state
+class AutoPlayAudioWidget extends StatelessWidget {
+  const AutoPlayAudioWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // Registrar el elemento HTML solo una vez
+    ui_web.platformViewRegistry.registerViewFactory('audio-element', (
+      int viewId,
+    ) {
+      final audio = html.AudioElement()
+        ..src =
+            EnvLoader.get('AUDIO') ??
+            'https://raw.githubusercontent.com/18-anth/Love14/Main/assets/floresamarillas.mpeg'
+        ..autoplay = true
+        ..loop = true
+        ..controls = false
+        ..style.width = '0'
+        ..style.height = '0'
+        ..style.border = 'none';
+      return audio;
+    });
+
+    return const SizedBox(
+      width: 0,
+      height: 0,
+      child: HtmlElementView(viewType: 'audio-element'),
+    );
+  }
+}
+
 class AuthenticationWrapper extends StatelessWidget {
   const AuthenticationWrapper({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AuthProvider>(
-      builder: (context, authProvider, child) {
-        // Still loading auth state
-        if (authProvider.firebaseUser == null && authProvider.isLoading) {
-          return const SplashScreen();
-        }
+    User? user = FirebaseAuth.instance.currentUser;
 
-        // Not authenticated - show login/signup
-        if (!authProvider.isAuthenticated) {
-          return const LoginScreen();
-        }
+    if (user != null) {
+      return FutureBuilder<DatabaseEvent>(
+        future: FirebaseDatabase.instance
+            .ref()
+            .child('Control/')
+            .child(user.uid)
+            .once(),
+        builder: (context, roleSnapshot) {
+          if (roleSnapshot.connectionState == ConnectionState.waiting) {
+            return const SplashScreen(seenOnboarding: true);
+          }
 
-        // Authenticated and has couple - show home
-        if (authProvider.hasCouple) {
-          return const HomeScreen();
-        }
+          if (roleSnapshot.hasError) {
+            return const OfflineScreen();
+          }
 
-        // Authenticated but couple not found - this shouldn't happen in normal flow
-        return const Scaffold(
-          body: Center(
-            child: Text('Error: No couple found. Please contact support.'),
-          ),
-        );
-      },
-    );
-  }
-}
+          if (!roleSnapshot.hasData ||
+              roleSnapshot.data!.snapshot.value == null) {
+            return const LoginScreen();
+          }
 
-/// Simple splash screen while loading
-class SplashScreen extends StatelessWidget {
-  const SplashScreen({super.key});
+          var userData =
+              roleSnapshot.data!.snapshot.value as Map<dynamic, dynamic>;
+          String role = userData['role'] ?? '';
 
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 20),
-            Text('Loading Love14...'),
-          ],
-        ),
-      ),
-    );
+          if (role == 'Client') {
+            return const PullToRefreshWrapper(child: ClientScreen());
+          } else if (role == 'Admin') {
+            return const PullToRefreshWrapper(child: AdminScreen());
+          } else {
+            return const Center(
+              child: Text(
+                'Rol no reconocido.',
+                style: TextStyle(fontSize: 20, color: Colors.red),
+              ),
+            );
+          }
+        },
+      );
+    } else {
+      return const LoginScreen();
+    }
   }
 }

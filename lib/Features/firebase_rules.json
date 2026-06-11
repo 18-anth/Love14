@@ -1,0 +1,52 @@
+{
+  "rules": {
+    "surprises": {
+      "$surpriseId": {
+        ".read": "root.child('users').child(auth.uid).exists() && (data.child('creatorId').val() === auth.uid || data.child('status').val() === 'published')",
+        ".write": "data.child('creatorId').val() === auth.uid || !data.exists()",
+        ".validate": "newData.hasChildren(['creatorId', 'recipientName', 'creatorName', 'title', 'description', 'flower', 'specialDate', 'publicUrl', 'qrCode', 'status', 'createdAt'])",
+        
+        "surpriseId": { ".validate": "newData.isString()" },
+        "creatorId": { ".validate": "newData.isString()" },
+        "recipientName": { ".validate": "newData.isString() && newData.val().length > 0" },
+        "creatorName": { ".validate": "newData.isString() && newData.val().length > 0" },
+        "title": { ".validate": "newData.isString() && newData.val().length > 0" },
+        "description": { ".validate": "newData.isString() && newData.val().length > 0" },
+        "customMessage": { ".validate": "newData.val() === null || newData.isString()" },
+        "flower": { ".validate": "newData.hasChildren(['type', 'quantity', 'addedAt'])" },
+        "photoUrls": { ".validate": "newData.val() === null || newData.isArray()" },
+        "videoUrl": { ".validate": "newData.val() === null || newData.isString()" },
+        "musicUrl": { ".validate": "newData.val() === null || newData.isString()" },
+        "aiLetter": { ".validate": "newData.val() === null || newData.isString()" },
+        "specialDate": { ".validate": "newData.isString()" },
+        "publicUrl": { ".validate": "newData.isString()" },
+        "qrCode": { ".validate": "newData.isString()" },
+        "status": { ".validate": "newData.isString() && (newData.val() === 'draft' || newData.val() === 'published' || newData.val() === 'viewed' || newData.val() === 'archived')" },
+        "createdAt": { ".validate": "newData.isString()" },
+        "viewedAt": { ".validate": "newData.val() === null || newData.isString()" },
+        "expiresAt": { ".validate": "newData.val() === null || newData.isString()" },
+        "analytics": { ".validate": "newData.val() === null || newData.isObject()" },
+        "premium": { ".validate": "newData.val() === null || newData.isNumber()" }
+      }
+    },
+
+    "user_plans": {
+      "$userId": {
+        ".read": "auth.uid === $userId || root.child('admins').child(auth.uid).exists()",
+        ".write": "auth.uid === $userId || root.child('admins').child(auth.uid).exists()",
+        ".validate": "newData.hasChildren(['plan', 'createdAt', 'surprisesCreated', 'surprisesLimit'])",
+        
+        "plan": { ".validate": "newData.isString() && (newData.val() === 'free' || newData.val() === 'premium')" },
+        "createdAt": { ".validate": "newData.isString()" },
+        "upgradeDate": { ".validate": "newData.val() === null || newData.isString()" },
+        "expiresAt": { ".validate": "newData.val() === null || newData.isString()" },
+        "surprisesCreated": { ".validate": "newData.isNumber() && newData.val() >= 0" },
+        "surprisesLimit": { ".validate": "newData.isNumber() && newData.val() > 0" },
+        "features": { ".validate": "newData.val() === null || newData.isArray()" },
+        "monthlyPrice": { ".validate": "newData.val() === null || newData.isNumber()" }
+      }
+    },
+
+    ".indexOn": ["creatorId", "status", "createdAt"]
+  }
+}
