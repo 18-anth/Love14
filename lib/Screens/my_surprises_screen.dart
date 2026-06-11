@@ -4,16 +4,18 @@ import 'package:provider/provider.dart';
 import 'package:love14/Screens/create_surprise_screen.dart';
 import 'package:love14/Screens/surprise_view_screen.dart';
 import 'package:love14/Widgets/surprise_widgets.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:love14/models/surprise_model.dart';
 
 class MySurprisesScreen extends StatefulWidget {
   final String userUid;
   final String userName;
 
   const MySurprisesScreen({
-    Key? key,
+    super.key,
     required this.userUid,
     required this.userName,
-  }) : super(key: key);
+  });
 
   @override
   State<MySurprisesScreen> createState() => _MySurprisesScreenState();
@@ -38,7 +40,7 @@ class _MySurprisesScreenState extends State<MySurprisesScreen>
 
   void _loadSurprises() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<SurpriseProvider>().loadMySurprises(widget.userUid);
+      context.read<SurpriseProvider>().initializeForUser(widget.userUid);
     });
   }
 
@@ -89,7 +91,7 @@ class _MySurprisesScreenState extends State<MySurprisesScreen>
           return const Center(child: CircularProgressIndicator());
         }
 
-        var surprises = provider?.mySurprises ?? [];
+        var surprises = provider.userSurprises;
 
         // Filter by status
         if (statusFilter != null) {
@@ -111,7 +113,7 @@ class _MySurprisesScreenState extends State<MySurprisesScreen>
         }
 
         return RefreshIndicator(
-          onRefresh: () => provider.refresh(widget.userUid),
+          onRefresh: () => provider.initializeForUser(widget.userUid),
           child: ListView.builder(
             padding: const EdgeInsets.all(16),
             itemCount: surprises.length,
@@ -120,9 +122,7 @@ class _MySurprisesScreenState extends State<MySurprisesScreen>
               return SurpriseCard(
                 surprise: surprise,
                 onTap: () => _navigateToView(context, surprise.surpriseId),
-                onPublish: surprise.status.toString().split('.').last == 'draft'
-                    ? () => _publishSurprise(context, surprise.surpriseId)
-                    : null,
+                onShare: () => _shareSurprise(surprise),
                 onDelete: () => _deleteSurprise(context, surprise.surpriseId),
               );
             },
@@ -136,10 +136,7 @@ class _MySurprisesScreenState extends State<MySurprisesScreen>
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CreateSurpriseScreen(
-          userUid: widget.userUid,
-          userName: widget.userName,
-        ),
+        builder: (context) => CreateSurpriseScreen(userId: widget.userUid),
       ),
     );
 
@@ -157,8 +154,14 @@ class _MySurprisesScreenState extends State<MySurprisesScreen>
     );
   }
 
-  Future<void> _publishSurprise(
-      BuildContext context, String surpriseId) async {
+  void _shareSurprise(Surprise surprise) async {
+    Share.share(
+      'Mira la sorpresa que ${surprise.creatorName} creó para ti: ${surprise.publicUrl}',
+      subject: 'Sorpresa especial: ${surprise.title}',
+    );
+  }
+
+  Future<void> _publishSurprise(BuildContext context, String surpriseId) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -199,8 +202,7 @@ class _MySurprisesScreenState extends State<MySurprisesScreen>
     }
   }
 
-  Future<void> _deleteSurprise(
-      BuildContext context, String surpriseId) async {
+  Future<void> _deleteSurprise(BuildContext context, String surpriseId) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(

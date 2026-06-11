@@ -1,20 +1,13 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:provider/provider.dart';
+import 'package:love14/models/flower_model.dart';
 import 'package:love14/providers/surprise_provider.dart';
-import 'package:love14/Widgets/surprise_widgets.dart';
+import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 class CreateSurpriseScreen extends StatefulWidget {
-  final String userUid;
-  final String userName;
+  final String userId;
 
-  const CreateSurpriseScreen({
-    Key? key,
-    required this.userUid,
-    required this.userName,
-  }) : super(key: key);
+  const CreateSurpriseScreen({super.key, required this.userId});
 
   @override
   State<CreateSurpriseScreen> createState() => _CreateSurpriseScreenState();
@@ -22,33 +15,27 @@ class CreateSurpriseScreen extends StatefulWidget {
 
 class _CreateSurpriseScreenState extends State<CreateSurpriseScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _imagePicker = ImagePicker();
+  final _recipientNameCtrl = TextEditingController();
+  final _creatorNameCtrl = TextEditingController();
+  final _titleCtrl = TextEditingController();
+  final _messageCtrl = TextEditingController();
 
-  // Form fields
-  late TextEditingController _recipientNameController;
-  late TextEditingController _personalMessageController;
-  DateTime? _specialDate;
-  String _selectedFlower = 'rose'; // Default flower
-  List<String> _selectedFlowerIds = [];
-  List<File> _selectedPhotos = [];
-  File? _selectedVideo;
-  File? _selectedMusic;
-  String? _aiLetter;
-  bool _wantsMusicOrVideo = false;
-  bool _wantsAILetter = false;
+  late FlowerType _selectedFlowerType;
+  DateTime? _selectedDate;
+  int _currentStep = 0;
 
   @override
   void initState() {
     super.initState();
-    _recipientNameController = TextEditingController();
-    _personalMessageController = TextEditingController();
-    _selectedFlowerIds = ['rose']; // Default
+    _selectedFlowerType = FlowerType.rosa;
   }
 
   @override
   void dispose() {
-    _recipientNameController.dispose();
-    _personalMessageController.dispose();
+    _recipientNameCtrl.dispose();
+    _creatorNameCtrl.dispose();
+    _titleCtrl.dispose();
+    _messageCtrl.dispose();
     super.dispose();
   }
 
@@ -57,325 +44,228 @@ class _CreateSurpriseScreenState extends State<CreateSurpriseScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Crear Sorpresa'),
+        backgroundColor: Colors.pink.shade400,
         elevation: 0,
-        backgroundColor: Colors.pink.shade200,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Form(
-            key: _formKey,
+      body: Consumer<SurpriseProvider>(
+        builder: (context, provider, _) {
+          if (provider.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (provider.errorMessage != null) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error, size: 64, color: Colors.red),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Error: ${provider.errorMessage}',
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => provider.clearError(),
+                    child: const Text('Reintentar'),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return SingleChildScrollView(
+            child: Stepper(
+              currentStep: _currentStep,
+              onStepTapped: (step) {
+                if (step < _currentStep || step == _currentStep) {
+                  setState(() => _currentStep = step);
+                }
+              },
+              steps: [
+                Step(
+                  title: const Text('Información'),
+                  isActive: _currentStep >= 0,
+                  state: _currentStep > 0 ? StepState.complete : StepState.indexed,
+                  content: _buildInfoStep(provider),
+                ),
+                Step(
+                  title: const Text('Flor'),
+                  isActive: _currentStep >= 1,
+                  state: _currentStep > 1 ? StepState.complete : StepState.indexed,
+                  content: _buildFlowerStep(provider),
+                ),
+                Step(
+                  title: const Text('Revisar'),
+                  isActive: _currentStep >= 2,
+                  state: _currentStep > 2 ? StepState.complete : StepState.indexed,
+                  content: _buildReviewStep(provider),
+                ),
+              ],
+              onStepContinue: () {
+                if (_currentStep < 2) {
+                  setState(() => _currentStep++);
+                } else {
+                  _createSurprise(context, provider);
+                }
+              },
+              onStepCancel: () {
+                if (_currentStep > 0) {
+                  setState(() => _currentStep--);
+                }
+              },
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildInfoStep(SurpriseProvider provider) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: [
+          TextFormField(
+            controller: _creatorNameCtrl,
+            decoration: const InputDecoration(
+              labelText: 'Tu nombre',
+              border: OutlineInputBorder(),
+            ),
+            validator: (v) => v?.isEmpty ?? true ? 'Requerido' : null,
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            controller: _recipientNameCtrl,
+            decoration: const InputDecoration(
+              labelText: 'Nombre del destinatario',
+              border: OutlineInputBorder(),
+            ),
+            validator: (v) => v?.isEmpty ?? true ? 'Requerido' : null,
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            controller: _titleCtrl,
+            decoration: const InputDecoration(
+              labelText: 'Título de la sorpresa',
+              border: OutlineInputBorder(),
+            ),
+            validator: (v) => v?.isEmpty ?? true ? 'Requerido' : null,
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            controller: _messageCtrl,
+            decoration: const InputDecoration(
+              labelText: 'Mensaje personalizado',
+              border: OutlineInputBorder(),
+            ),
+            maxLines: 3,
+            validator: (v) => v?.isEmpty ?? true ? 'Requerido' : null,
+          ),
+          const SizedBox(height: 16),
+          ListTile(
+            title: const Text('Fecha especial'),
+            subtitle: Text(
+              _selectedDate != null
+                  ? DateFormat('dd/MM/yyyy').format(_selectedDate!)
+                  : 'Seleccionar fecha',
+            ),
+            onTap: _pickDate,
+            trailing: const Icon(Icons.calendar_today),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFlowerStep(SurpriseProvider provider) {
+    return Column(
+      children: [
+        const Text(
+          'Selecciona una flor para la sorpresa:',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 16),
+        Wrap(
+          spacing: 8,
+          children: FlowerType.values.map((type) {
+            return GestureDetector(
+              onTap: () => setState(() => _selectedFlowerType = type),
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: _selectedFlowerType == type
+                        ? Colors.pink
+                        : Colors.grey,
+                    width: _selectedFlowerType == type ? 2 : 1,
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  children: [
+                    Text(type.emoji, style: const TextStyle(fontSize: 32)),
+                    const SizedBox(height: 4),
+                    Text(
+                      type.displayName,
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+        const SizedBox(height: 24),
+        if (!provider.isPremium)
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.blue.shade100,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Text(
+              '💡 Mejora a Premium para agregar más características',
+              style: TextStyle(color: Colors.blue),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildReviewStep(SurpriseProvider provider) {
+    return Column(
+      children: [
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ===== SECTION 1: BASIC INFO =====
-                SectionHeader(title: '1. Información Básica'),
-                const SizedBox(height: 16),
-
-                // Recipient name
-                TextFormField(
-                  controller: _recipientNameController,
-                  decoration: InputDecoration(
-                    labelText: 'Nombre de quien recibe',
-                    hintText: 'Ej: María, mi amor',
-                    prefixIcon: Icon(Icons.person, color: Colors.pink.shade300),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    filled: true,
-                    fillColor: Colors.pink.shade50,
-                  ),
-                  validator: (value) {
-                    if (value?.isEmpty ?? true) {
-                      return 'El nombre es requerido';
-                    }
-                    return null;
-                  },
+                Text(
+                  'Resumen',
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(height: 16),
-
-                // Special date
-                GestureDetector(
-                  onTap: () => _selectSpecialDate(context),
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.pink.shade300),
-                      borderRadius: BorderRadius.circular(12),
-                      color: Colors.pink.shade50,
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.calendar_today, color: Colors.pink.shade300),
-                        const SizedBox(width: 12),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Fecha Especial',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.pink.shade300,
-                              ),
-                            ),
-                            Text(
-                              _specialDate == null
-                                  ? 'Selecciona una fecha'
-                                  : '${_specialDate!.day}/${_specialDate!.month}/${_specialDate!.year}',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // ===== SECTION 2: PERSONAL MESSAGE =====
-                SectionHeader(title: '2. Mensaje Personalizado'),
-                const SizedBox(height: 16),
-
-                TextFormField(
-                  controller: _personalMessageController,
-                  maxLines: 4,
-                  decoration: InputDecoration(
-                    labelText: 'Tu mensaje',
-                    hintText: 'Escribe un mensaje romántico y personalizado...',
-                    prefixIcon: Icon(Icons.edit, color: Colors.pink.shade300),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    filled: true,
-                    fillColor: Colors.pink.shade50,
-                  ),
-                  validator: (value) {
-                    if (value?.isEmpty ?? true) {
-                      return 'El mensaje es requerido';
-                    }
-                    if ((value?.length ?? 0) < 10) {
-                      return 'El mensaje debe tener al menos 10 caracteres';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 24),
-
-                // ===== SECTION 3: FLOWERS =====
-                SectionHeader(title: '3. Flores'),
-                const SizedBox(height: 16),
-
-                FlowerSelector(
-                  selectedFlowers: _selectedFlowerIds,
-                  onFlowersChanged: (flowers) {
-                    setState(() {
-                      _selectedFlowerIds = flowers;
-                    });
-                  },
-                ),
-                const SizedBox(height: 24),
-
-                // ===== SECTION 4: PREMIUM FEATURES =====
-                SectionHeader(title: '4. Características Premium'),
-                const SizedBox(height: 16),
-
-                // Toggle premium features
-                SwitchListTile(
-                  title: const Text('Agregar música y video'),
-                  subtitle: const Text('Características premium'),
-                  value: _wantsMusicOrVideo,
-                  onChanged: (value) {
-                    setState(() {
-                      _wantsMusicOrVideo = value;
-                      if (!value) {
-                        _selectedMusic = null;
-                        _selectedVideo = null;
-                      }
-                    });
-                  },
-                ),
-                const SizedBox(height: 12),
-
-                if (_wantsMusicOrVideo) ...[
-                  // Music picker
-                  PremiumFeatureButton(
-                    icon: Icons.music_note,
-                    title: _selectedMusic == null
-                        ? 'Seleccionar música'
-                        : 'Música: ${_selectedMusic!.path.split('/').last}',
-                    onTap: () => _pickMusic(),
-                    color: Colors.blue,
-                  ),
-                  const SizedBox(height: 12),
-
-                  // Video picker
-                  PremiumFeatureButton(
-                    icon: Icons.video_library,
-                    title: _selectedVideo == null
-                        ? 'Seleccionar video'
-                        : 'Video: ${_selectedVideo!.path.split('/').last}',
-                    onTap: () => _pickVideo(),
-                    color: Colors.purple,
-                  ),
-                  const SizedBox(height: 12),
-                ],
-
-                // Photos
-                PremiumFeatureButton(
-                  icon: Icons.photo_library,
-                  title: _selectedPhotos.isEmpty
-                      ? 'Seleccionar fotos'
-                      : '${_selectedPhotos.length} foto(s) seleccionada(s)',
-                  onTap: () => _pickPhotos(),
-                  color: Colors.green,
-                ),
-                const SizedBox(height: 12),
-
-                // AI Letter
-                SwitchListTile(
-                  title: const Text('Generar carta romántica con IA'),
-                  subtitle: const Text('Características premium'),
-                  value: _wantsAILetter,
-                  onChanged: (value) {
-                    setState(() {
-                      _wantsAILetter = value;
-                      if (!value) {
-                        _aiLetter = null;
-                      }
-                    });
-                  },
-                ),
-
-                if (_wantsAILetter && _aiLetter == null) ...[
-                  const SizedBox(height: 12),
-                  Consumer<SurpriseProvider>(
-                    builder: (context, provider, child) {
-                      return ElevatedButton.icon(
-                        onPressed: provider.isLoading
-                            ? null
-                            : () => _generateAILetter(context),
-                        icon: const Icon(Icons.auto_awesome),
-                        label: provider.isLoading
-                            ? const SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : const Text('Generar con IA'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.amber,
-                          minimumSize: const Size.fromHeight(50),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-
-                if (_aiLetter != null) ...[
-                  const SizedBox(height: 12),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.amber),
-                      borderRadius: BorderRadius.circular(12),
-                      color: Colors.amber.shade50,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Carta IA Generada',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.amber.shade800,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(_aiLetter!, style: const TextStyle(fontSize: 12)),
-                      ],
-                    ),
-                  ),
-                ],
-
-                const SizedBox(height: 32),
-
-                // ===== PLAN INFO =====
-                PlanInfoBox(),
-                const SizedBox(height: 32),
-
-                // ===== ACTION BUTTONS =====
-                Consumer<SurpriseProvider>(
-                  builder: (context, provider, child) {
-                    return Column(
-                      children: [
-                        // Save as draft
-                        SizedBox(
-                          width: double.infinity,
-                          height: 50,
-                          child: OutlinedButton(
-                            onPressed: provider.isLoading
-                                ? null
-                                : () => _saveDraft(context),
-                            child: const Text(
-                              'Guardar como borrador',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-
-                        // Create & publish
-                        SizedBox(
-                          width: double.infinity,
-                          height: 50,
-                          child: ElevatedButton(
-                            onPressed: provider.isLoading
-                                ? null
-                                : () => _createAndPublish(context),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.pink.shade300,
-                            ),
-                            child: provider.isLoading
-                                ? const SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.white,
-                                      ),
-                                    ),
-                                  )
-                                : const Text(
-                                    'Crear y compartir',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                          ),
-                        ),
-                      ],
-                    );
-                  },
+                _SummaryRow('De:', _creatorNameCtrl.text),
+                _SummaryRow('Para:', _recipientNameCtrl.text),
+                _SummaryRow('Título:', _titleCtrl.text),
+                _SummaryRow('Flor:', _selectedFlowerType.displayName),
+                _SummaryRow(
+                  'Fecha:',
+                  _selectedDate != null
+                      ? DateFormat('dd/MM/yyyy').format(_selectedDate!)
+                      : 'No seleccionada',
                 ),
               ],
             ),
           ),
         ),
-      ),
+      ],
     );
   }
 
-  // ===== HELPER METHODS =====
-
-  Future<void> _selectSpecialDate(BuildContext context) async {
+  void _pickDate() async {
     final picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -383,137 +273,59 @@ class _CreateSurpriseScreenState extends State<CreateSurpriseScreen> {
       lastDate: DateTime.now().add(const Duration(days: 365)),
     );
     if (picked != null) {
-      setState(() {
-        _specialDate = picked;
-      });
+      setState(() => _selectedDate = picked);
     }
   }
 
-  Future<void> _pickPhotos() async {
-    final result = await _imagePicker.pickMultiImage();
-    if (result.isNotEmpty) {
-      setState(() {
-        _selectedPhotos = result.map((e) => File(e.path)).toList();
-      });
-    }
-  }
-
-  Future<void> _pickVideo() async {
-    final result = await FilePicker.platform.pickFiles(type: FileType.video);
-    if (result != null) {
-      setState(() {
-        _selectedVideo = File(result.files.single.path!);
-      });
-    }
-  }
-
-  Future<void> _pickMusic() async {
-    final result = await FilePicker.platform.pickFiles(type: FileType.audio);
-    if (result != null) {
-      setState(() {
-        _selectedMusic = File(result.files.single.path!);
-      });
-    }
-  }
-
-  Future<void> _generateAILetter(BuildContext context) async {
-    final provider = context.read<SurpriseProvider>();
-
-    final letter = await provider.generateAILetter(
-      recipientName: _recipientNameController.text,
-      senderName: widget.userName,
-      personalMessage: _personalMessageController.text,
-      specialDate: _specialDate ?? DateTime.now(),
-    );
-
-    if (letter != null) {
-      setState(() {
-        _aiLetter = letter;
-      });
-    }
-  }
-
-  Future<void> _saveDraft(BuildContext context) async {
+  void _createSurprise(BuildContext context, SurpriseProvider provider) async {
     if (!_formKey.currentState!.validate()) return;
-    if (_specialDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Selecciona una fecha especial')),
-      );
-      return;
-    }
-
-    final provider = context.read<SurpriseProvider>();
-
-    // Upload media if exists
-    String? musicUrl;
-    String? videoUrl;
-    List<String> photoUrls = [];
-
-    // (Uploads happen when saving draft - implement as needed)
 
     final surprise = await provider.createSurprise(
-      userUid: widget.userUid,
-      userName: widget.userName,
-      recipientName: _recipientNameController.text,
-      personalMessage: _personalMessageController.text,
-      flowerType: _selectedFlower,
-      flowerIds: _selectedFlowerIds,
-      specialDate: _specialDate!,
-      musicUrl: musicUrl,
-      photoUrls: photoUrls,
-      videoUrl: videoUrl,
-      aiLetter: _aiLetter,
+      userUid: widget.userId,
+      userName: _creatorNameCtrl.text,
+      recipientName: _recipientNameCtrl.text,
+      personalMessage: _messageCtrl.text,
+      flowerType: _selectedFlowerType.toString().split('.').last,
+      flowerIds: ['1'],  // Single flower for free plan
+      specialDate: _selectedDate ?? DateTime.now(),
     );
 
-    if (surprise != null) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Sorpresa guardada como borrador')),
-        );
-        Navigator.pop(context, surprise);
-      }
+    if (mounted && surprise != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('¡Sorpresa creada!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      Navigator.pop(context, surprise);
     }
   }
+}
 
-  Future<void> _createAndPublish(BuildContext context) async {
-    if (!_formKey.currentState!.validate()) return;
-    if (_specialDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Selecciona una fecha especial')),
-      );
-      return;
-    }
+class _SummaryRow extends StatelessWidget {
+  final String label;
+  final String value;
 
-    final provider = context.read<SurpriseProvider>();
+  const _SummaryRow(this.label, this.value);
 
-    // Create surprise
-    final surprise = await provider.createSurprise(
-      userUid: widget.userUid,
-      userName: widget.userName,
-      recipientName: _recipientNameController.text,
-      personalMessage: _personalMessageController.text,
-      flowerType: _selectedFlower,
-      flowerIds: _selectedFlowerIds,
-      specialDate: _specialDate!,
-      aiLetter: _aiLetter,
-    );
-
-    if (surprise != null) {
-      // Publish
-      await provider.publishSurprise(
-        userUid: widget.userUid,
-        surpriseId: surprise.surpriseId,
-      );
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('¡Sorpresa creada y compartida!'),
-            backgroundColor: Colors.green,
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+          Expanded(
+            child: Text(
+              value,
+              textAlign: TextAlign.end,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
-        );
-        Navigator.pop(context, surprise);
-      }
-    }
+        ],
+      ),
+    );
   }
 }

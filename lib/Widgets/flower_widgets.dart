@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:love14/Features/Surprises/Domain/models/flower_model.dart';
+import 'package:love14/models/flower_model.dart';
+
 
 class FlowerSelector extends StatelessWidget {
   final Flower selectedFlower;
@@ -60,7 +61,9 @@ class FlowerSelector extends StatelessWidget {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 12,
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        fontWeight: isSelected
+                            ? FontWeight.bold
+                            : FontWeight.normal,
                         color: isSelected ? Colors.pink : Colors.black54,
                       ),
                     ),
@@ -79,11 +82,7 @@ class FlowerPreview extends StatelessWidget {
   final Flower flower;
   final double size;
 
-  const FlowerPreview({
-    super.key,
-    required this.flower,
-    this.size = 80,
-  });
+  const FlowerPreview({super.key, required this.flower, this.size = 80});
 
   @override
   Widget build(BuildContext context) {
@@ -93,16 +92,10 @@ class FlowerPreview extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: Colors.pink.shade50,
-        border: Border.all(
-          color: Colors.pink.shade200,
-          width: 2,
-        ),
+        border: Border.all(color: Colors.pink.shade200, width: 2),
       ),
       child: Center(
-        child: Text(
-          flower.type.emoji,
-          style: TextStyle(fontSize: size * 0.5),
-        ),
+        child: Text(flower.type.emoji, style: TextStyle(fontSize: size * 0.5)),
       ),
     );
   }
@@ -149,10 +142,7 @@ class FlowerCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            Text(
-              flower.type.emoji,
-              style: const TextStyle(fontSize: 48),
-            ),
+            Text(flower.type.emoji, style: const TextStyle(fontSize: 48)),
             if (flower.quantity > 1)
               Padding(
                 padding: const EdgeInsets.only(top: 8),

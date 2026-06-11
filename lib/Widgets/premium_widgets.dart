@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:love14/Features/Surprises/Domain/models/freemium_model.dart';
+import 'package:love14/models/freemium_model.dart';
 
 class PremiumBadge extends StatelessWidget {
   final bool isPremium;

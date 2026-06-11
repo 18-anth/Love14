@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:love14/providers/surprise_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:love14/Features/Surprises/Providers/surprise_provider.dart';
-import 'package:love14/Features/Surprises/Widgets/surprise_widgets.dart';
-import 'package:love14/Features/Surprises/Presentation/surprise_view_screen.dart';
+import 'package:love14/Widgets/surprise_widgets.dart';
+import 'package:love14/Screens/surprise_view_screen.dart';
 
 class MyPrisesScreen extends StatefulWidget {
   final String userId;
 
-  const MyPrisesScreen({
-    super.key,
-    required this.userId,
-  });
+  const MyPrisesScreen({super.key, required this.userId});
 
   @override
   State<MyPrisesScreen> createState() => _MyPrisesScreenState();
@@ -53,7 +50,11 @@ class _MyPrisesScreenState extends State<MyPrisesScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.favorite_border, size: 64, color: Colors.grey.shade400),
+                  Icon(
+                    Icons.favorite_border,
+                    size: 64,
+                    color: Colors.grey.shade400,
+                  ),
                   const SizedBox(height: 16),
                   const Text(
                     'No tienes sorpresas aún',
@@ -100,7 +101,11 @@ class _MyPrisesScreenState extends State<MyPrisesScreen> {
                     );
                   },
                   onShare: () => _shareSurprise(surprise),
-                  onDelete: () => _showDeleteConfirm(context, provider, surprise.surpriseId),
+                  onDelete: () => _showDeleteConfirm(
+                    context,
+                    provider,
+                    surprise.surpriseId,
+                  ),
                 );
               },
             ),
@@ -117,7 +122,11 @@ class _MyPrisesScreenState extends State<MyPrisesScreen> {
     );
   }
 
-  void _showDeleteConfirm(BuildContext context, SurpriseProvider provider, String surpriseId) {
+  void _showDeleteConfirm(
+    BuildContext context,
+    SurpriseProvider provider,
+    String surpriseId,
+  ) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -130,13 +139,14 @@ class _MyPrisesScreenState extends State<MyPrisesScreen> {
           ),
           ElevatedButton(
             onPressed: () {
-              provider.deleteSurprise(surpriseId);
+              provider.deleteSurprise(surpriseId: surpriseId);
               Navigator.pop(context);
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text(
+              'Eliminar',
+              style: TextStyle(color: Colors.white),
             ),
-            child: const Text('Eliminar', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),

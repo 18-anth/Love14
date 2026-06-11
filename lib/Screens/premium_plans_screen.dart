@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:love14/providers/surprise_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:love14/Features/Surprises/Providers/surprise_provider.dart';
-import 'package:love14/Features/Surprises/Services/payment_service.dart';
-import 'package:love14/Features/Surprises/Widgets/premium_widgets.dart';
+import 'package:love14/services/payment_service.dart';
+import 'package:love14/Widgets/premium_widgets.dart';
 
 class PremiumPlansScreen extends StatefulWidget {
   final String userId;

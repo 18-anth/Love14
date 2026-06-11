@@ -1,7 +1,7 @@
 // ARCHIVO DE CONFIGURACIÓN Y SETUP
 
-import 'package:love14/Features/Surprises/Services/surprise_service.dart';
-import 'package:love14/Features/Surprises/Domain/models/freemium_model.dart';
+import 'package:love14/services/surprise_service.dart';
+import 'package:love14/models/freemium_model.dart';
 
 /// Configuración e Inicialización del Sistema Surprises
 class SurprisesConfig {

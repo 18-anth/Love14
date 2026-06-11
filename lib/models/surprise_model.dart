@@ -1,257 +1,188 @@
-enum SurpriseStatus { draft, published, viewed, expired }
+import 'package:love14/models/flower_model.dart';
 
-enum PlanType { free, premium }
+enum SurpriseStatus { draft, published, viewed, shared, archived }
 
-class SurpriseModel {
+// Type alias for compatibility
+typedef SurpriseModel = Surprise;
+
+class Surprise {
   final String surpriseId;
-  final String creatorUid;
-  final String creatorName;
-  final String recipientName;
-  final String personalMessage;
-  final String flowerType; // Type of flower (rose, tulip, sunflower, etc.)
-  final List<String> flowerIds; // IDs of 3D flowers
-  final String? musicUrl; // Premium feature
-  final List<String> photoUrls; // Premium: multiple photos
-  final String? videoUrl; // Premium: video optional
-  final DateTime specialDate; // Special occasion date
-  final String? aiLetter; // Premium: AI-generated romantic letter
-  final String? publicUrl; // Public shareable link
-  final String? qrCode; // QR code data/image URL
+  final String creatorId; // User who created it
+  final String recipientName; // Nome de quem recebe
+  final String creatorName; // Nome de quem envia
+  final String title; // "A sorpresa para María"
+  final String description; // Descrição
+  final String? customMessage; // Mensagem personalizada
+  final Flower flower; // Flores selecionadas
+  final List<String> photoUrls; // URLs de fotos (premium)
+  final String? videoUrl; // URL de vídeo (premium)
+  final String? musicUrl; // URL de música (premium)
+  final String? aiLetter; // Carta gerada por IA (premium)
+  final DateTime specialDate; // Data especial (aniversário, etc)
+  final String publicUrl; // URL pública da sorpresa
+  final String qrCode; // Código QR codificado como string
   final SurpriseStatus status;
-  final PlanType planType;
-  final int viewCount;
   final DateTime createdAt;
+  final DateTime? viewedAt;
   final DateTime? expiresAt;
-  final Map<String, dynamic>? metadata;
+  final Map<String, int>? analytics; // {views: 10, shares: 2}
+  final int? premium; // 1 = premium, 0 = free
+  final bool isPremium; // deprecated: use premium field
 
-  SurpriseModel({
+  Surprise({
     required this.surpriseId,
-    required this.creatorUid,
-    required this.creatorName,
+    required this.creatorId,
     required this.recipientName,
-    required this.personalMessage,
-    required this.flowerType,
-    required this.flowerIds,
-    this.musicUrl,
-    required this.photoUrls,
+    required this.creatorName,
+    required this.title,
+    required this.description,
+    this.customMessage,
+    required this.flower,
+    this.photoUrls = const [],
     this.videoUrl,
-    required this.specialDate,
+    this.musicUrl,
     this.aiLetter,
-    this.publicUrl,
-    this.qrCode,
+    required this.specialDate,
+    required this.publicUrl,
+    required this.qrCode,
     required this.status,
-    required this.planType,
-    this.viewCount = 0,
     required this.createdAt,
+    this.viewedAt,
     this.expiresAt,
-    this.metadata,
+    this.analytics,
+    this.premium,
+    this.isPremium = false,
   });
 
-  /// Check if surprise is expired
   bool isExpired() {
     if (expiresAt == null) return false;
     return DateTime.now().isAfter(expiresAt!);
   }
 
-  /// Get remaining days until special date
-  int daysUntilSpecialDate() {
-    final difference = specialDate.difference(DateTime.now());
-    return difference.inDays;
+  bool isViewed() => viewedAt != null;
+
+  int getViewCount() => analytics?['views'] ?? 0;
+
+  int getShareCount() => analytics?['shares'] ?? 0;
+
+  bool hasPremiumFeatures() {
+    return (premium == 1) ||
+        isPremium ||
+        photoUrls.isNotEmpty ||
+        videoUrl != null ||
+        musicUrl != null ||
+        aiLetter != null;
   }
 
-  /// Check if user has premium features
-  bool hasPremiumAccess() => planType == PlanType.premium;
-
-  /// Validate free tier restrictions
-  bool isValidForFreeTier() {
-    // Free tier: 1 flower, 1 poem, link only
-    return flowerIds.length <= 1 && photoUrls.length <= 1;
-  }
-
-  /// Get available features based on plan
-  SurpriseFeatures getAvailableFeatures() {
-    return SurpriseFeatures(
-      music: planType == PlanType.premium,
-      multipleFlowers: planType == PlanType.premium,
-      photos: planType == PlanType.premium,
-      video: planType == PlanType.premium,
-      aiLetter: planType == PlanType.premium,
-      qrCode: planType == PlanType.premium,
-      publicLink: true, // Both tiers
-    );
-  }
-
-  /// Convert to Firebase Document
   Map<String, dynamic> toMap() {
     return {
       'surpriseId': surpriseId,
-      'creatorUid': creatorUid,
-      'creatorName': creatorName,
+      'creatorId': creatorId,
       'recipientName': recipientName,
-      'personalMessage': personalMessage,
-      'flowerType': flowerType,
-      'flowerIds': flowerIds,
-      'musicUrl': musicUrl,
+      'creatorName': creatorName,
+      'title': title,
+      'description': description,
+      'customMessage': customMessage,
+      'flower': flower.toMap(),
       'photoUrls': photoUrls,
       'videoUrl': videoUrl,
-      'specialDate': specialDate.toIso8601String(),
+      'musicUrl': musicUrl,
       'aiLetter': aiLetter,
+      'specialDate': specialDate.toIso8601String(),
       'publicUrl': publicUrl,
       'qrCode': qrCode,
       'status': status.toString().split('.').last,
-      'planType': planType.toString().split('.').last,
-      'viewCount': viewCount,
       'createdAt': createdAt.toIso8601String(),
+      'viewedAt': viewedAt?.toIso8601String(),
       'expiresAt': expiresAt?.toIso8601String(),
-      'metadata': metadata,
+      'analytics': analytics,
+      'premium': premium ?? (isPremium ? 1 : 0),
     };
   }
 
-  /// Create from Firebase Document
-  factory SurpriseModel.fromMap(String docId, Map<String, dynamic> map) {
-    return SurpriseModel(
+  factory Surprise.fromMap(String docId, Map<String, dynamic> map) {
+    return Surprise(
       surpriseId: docId,
-      creatorUid: map['creatorUid'] as String,
-      creatorName: map['creatorName'] as String,
+      creatorId: map['creatorId'] as String,
       recipientName: map['recipientName'] as String,
-      personalMessage: map['personalMessage'] as String,
-      flowerType: map['flowerType'] as String,
-      flowerIds: List<String>.from(map['flowerIds'] as List? ?? []),
-      musicUrl: map['musicUrl'] as String?,
+      creatorName: map['creatorName'] as String,
+      title: map['title'] as String,
+      description: map['description'] as String,
+      customMessage: map['customMessage'] as String?,
+      flower: Flower.fromMap(map['flower'] ?? {}),
       photoUrls: List<String>.from(map['photoUrls'] as List? ?? []),
       videoUrl: map['videoUrl'] as String?,
-      specialDate: DateTime.parse(map['specialDate'] as String),
+      musicUrl: map['musicUrl'] as String?,
       aiLetter: map['aiLetter'] as String?,
-      publicUrl: map['publicUrl'] as String?,
-      qrCode: map['qrCode'] as String?,
+      specialDate: DateTime.parse(map['specialDate'] as String),
+      publicUrl: map['publicUrl'] as String,
+      qrCode: map['qrCode'] as String,
       status: SurpriseStatus.values.firstWhere(
         (e) => e.toString().split('.').last == map['status'],
         orElse: () => SurpriseStatus.draft,
       ),
-      planType: PlanType.values.firstWhere(
-        (e) => e.toString().split('.').last == map['planType'],
-        orElse: () => PlanType.free,
-      ),
-      viewCount: (map['viewCount'] as num?)?.toInt() ?? 0,
       createdAt: DateTime.parse(map['createdAt'] as String),
-      expiresAt: map['expiresAt'] != null
-          ? DateTime.parse(map['expiresAt'] as String)
+      viewedAt: map['viewedAt'] != null
+          ? DateTime.parse(map['viewedAt'])
           : null,
-      metadata: map['metadata'] as Map<String, dynamic>?,
+      expiresAt: map['expiresAt'] != null
+          ? DateTime.parse(map['expiresAt'])
+          : null,
+      analytics: map['analytics'] != null
+          ? Map<String, int>.from(map['analytics'])
+          : null,
+      premium: map['premium'] as int?,
+      isPremium: (map['premium'] as int? ?? 0) == 1,
     );
   }
 
-  /// Create copy with modifications
-  SurpriseModel copyWith({
+  Surprise copyWith({
     String? surpriseId,
-    String? creatorUid,
-    String? creatorName,
+    String? creatorId,
     String? recipientName,
-    String? personalMessage,
-    String? flowerType,
-    List<String>? flowerIds,
-    String? musicUrl,
+    String? creatorName,
+    String? title,
+    String? description,
+    String? customMessage,
+    Flower? flower,
     List<String>? photoUrls,
     String? videoUrl,
-    DateTime? specialDate,
+    String? musicUrl,
     String? aiLetter,
+    DateTime? specialDate,
     String? publicUrl,
     String? qrCode,
     SurpriseStatus? status,
-    PlanType? planType,
-    int? viewCount,
     DateTime? createdAt,
+    DateTime? viewedAt,
     DateTime? expiresAt,
-    Map<String, dynamic>? metadata,
+    Map<String, int>? analytics,
+    int? premium,
+    bool? isPremium,
   }) {
-    return SurpriseModel(
+    return Surprise(
       surpriseId: surpriseId ?? this.surpriseId,
-      creatorUid: creatorUid ?? this.creatorUid,
-      creatorName: creatorName ?? this.creatorName,
+      creatorId: creatorId ?? this.creatorId,
       recipientName: recipientName ?? this.recipientName,
-      personalMessage: personalMessage ?? this.personalMessage,
-      flowerType: flowerType ?? this.flowerType,
-      flowerIds: flowerIds ?? this.flowerIds,
-      musicUrl: musicUrl ?? this.musicUrl,
+      creatorName: creatorName ?? this.creatorName,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      customMessage: customMessage ?? this.customMessage,
+      flower: flower ?? this.flower,
       photoUrls: photoUrls ?? this.photoUrls,
       videoUrl: videoUrl ?? this.videoUrl,
-      specialDate: specialDate ?? this.specialDate,
+      musicUrl: musicUrl ?? this.musicUrl,
       aiLetter: aiLetter ?? this.aiLetter,
+      specialDate: specialDate ?? this.specialDate,
       publicUrl: publicUrl ?? this.publicUrl,
       qrCode: qrCode ?? this.qrCode,
       status: status ?? this.status,
-      planType: planType ?? this.planType,
-      viewCount: viewCount ?? this.viewCount,
       createdAt: createdAt ?? this.createdAt,
+      viewedAt: viewedAt ?? this.viewedAt,
       expiresAt: expiresAt ?? this.expiresAt,
-      metadata: metadata ?? this.metadata,
+      analytics: analytics ?? this.analytics,
+      premium: premium ?? this.premium,
+      isPremium: isPremium ?? this.isPremium,
     );
-  }
-
-  @override
-  String toString() {
-    return 'SurpriseModel(surpriseId: $surpriseId, recipientName: $recipientName, status: $status)';
-  }
-}
-
-/// Represents available features for each plan tier
-class SurpriseFeatures {
-  final bool music;
-  final bool multipleFlowers;
-  final bool photos;
-  final bool video;
-  final bool aiLetter;
-  final bool qrCode;
-  final bool publicLink;
-
-  SurpriseFeatures({
-    required this.music,
-    required this.multipleFlowers,
-    required this.photos,
-    required this.video,
-    required this.aiLetter,
-    required this.qrCode,
-    required this.publicLink,
-  });
-
-  /// Get price for premium plan (in USD)
-  static const double premiumPrice = 9.99;
-
-  /// Free tier features
-  factory SurpriseFeatures.free() {
-    return SurpriseFeatures(
-      music: false,
-      multipleFlowers: false,
-      photos: false,
-      video: false,
-      aiLetter: false,
-      qrCode: false,
-      publicLink: true,
-    );
-  }
-
-  /// Premium tier features
-  factory SurpriseFeatures.premium() {
-    return SurpriseFeatures(
-      music: true,
-      multipleFlowers: true,
-      photos: true,
-      video: true,
-      aiLetter: true,
-      qrCode: true,
-      publicLink: true,
-    );
-  }
-
-  int countAvailableFeatures() {
-    int count = 0;
-    if (music) count++;
-    if (multipleFlowers) count++;
-    if (photos) count++;
-    if (video) count++;
-    if (aiLetter) count++;
-    if (qrCode) count++;
-    if (publicLink) count++;
-    return count;
   }
 }

@@ -1,40 +1,68 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:love14/models/surprise_model.dart';
 import 'package:love14/services/surprise_service.dart';
+import 'package:love14/models/surprise_model.dart';
+import 'package:love14/models/freemium_model.dart';
 
 class SurpriseProvider extends ChangeNotifier {
   final SurpriseService _service = SurpriseService();
 
   // State variables
-  List<SurpriseModel> _mySurprises = [];
-  List<SurpriseModel> _publicSurprises = [];
-  SurpriseModel? _currentSurprise;
+  List<Surprise> _userSurprises = [];
+  List<Surprise> _publicSurprises = [];
+  Surprise? _currentSurprise;
   bool _isLoading = false;
   bool _isUploading = false;
   String? _errorMessage;
   double _uploadProgress = 0.0;
+  bool _isPremium = false;
 
   // Getters
-  List<SurpriseModel> get mySurprises => _mySurprises;
-  List<SurpriseModel> get publicSurprises => _publicSurprises;
-  SurpriseModel? get currentSurprise => _currentSurprise;
+  List<Surprise> get userSurprises => _userSurprises;
+  List<Surprise> get publicSurprises => _publicSurprises;
+  Surprise? get currentSurprise => _currentSurprise;
   bool get isLoading => _isLoading;
   bool get isUploading => _isUploading;
   String? get errorMessage => _errorMessage;
   double get uploadProgress => _uploadProgress;
+  bool get isPremium => _isPremium;
 
   // Statistics
-  int get totalSurprises => _mySurprises.length;
+  int get totalSurprises => _userSurprises.length;
   int get publishedSurprises =>
-      _mySurprises.where((s) => s.status == SurpriseStatus.published).length;
+      _userSurprises.where((s) => s.status == SurpriseStatus.published).length;
   int get draftSurprises =>
-      _mySurprises.where((s) => s.status == SurpriseStatus.draft).length;
+      _userSurprises.where((s) => s.status == SurpriseStatus.draft).length;
+
+  // ============ INITIALIZATION ============
+
+  /// Initialize for user
+  Future<void> initializeForUser(String userUid) async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+
+      // Load user plan
+      final plan = await _service.getUserPlan(userUid);
+      _isPremium = plan.isPremium();
+
+      // Load user surprises
+      await loadMySurprises(userUid);
+
+      _errorMessage = null;
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 
   // ============ CREATE SURPRISE ============
 
   /// Create new surprise with all details
-  Future<SurpriseModel?> createSurprise({
+  Future<Surprise?> createSurprise({
     required String userUid,
     required String userName,
     required String recipientName,
@@ -89,7 +117,7 @@ class SurpriseProvider extends ChangeNotifier {
       );
 
       _currentSurprise = surprise;
-      _mySurprises.insert(0, surprise);
+      _userSurprises.insert(0, surprise);
       _errorMessage = null;
 
       _isLoading = false;
@@ -112,7 +140,7 @@ class SurpriseProvider extends ChangeNotifier {
       _isLoading = true;
       notifyListeners();
 
-      _mySurprises = await _service.getUserSurprises(userUid: userUid);
+      _userSurprises = await _service.getUserSurprises(userUid: userUid);
       _errorMessage = null;
 
       _isLoading = false;
@@ -149,9 +177,8 @@ class SurpriseProvider extends ChangeNotifier {
       notifyListeners();
 
       _currentSurprise = await _service.getSurpriseById(surpriseId);
-      
+
       if (_currentSurprise != null) {
-        // Track view
         await _service.trackView(surpriseId: surpriseId);
       }
 
@@ -174,7 +201,6 @@ class SurpriseProvider extends ChangeNotifier {
       _currentSurprise = await _service.getSurpriseByPublicUrl(slug);
 
       if (_currentSurprise != null) {
-        // Track view
         await _service.trackView(surpriseId: _currentSurprise!.surpriseId);
       }
 
@@ -188,12 +214,17 @@ class SurpriseProvider extends ChangeNotifier {
     }
   }
 
+  /// Load surprise (alias for loadSurpriseById)
+  Future<void> loadSurprise(String surpriseId) async {
+    await loadSurpriseById(surpriseId);
+  }
+
   // ============ UPDATE SURPRISE ============
 
   /// Update surprise details
   Future<bool> updateSurprise({
     required String userUid,
-    required SurpriseModel updatedSurprise,
+    required Surprise updatedSurprise,
   }) async {
     try {
       _isLoading = true;
@@ -207,10 +238,11 @@ class SurpriseProvider extends ChangeNotifier {
       );
 
       // Update local state
-      final index = _mySurprises
-          .indexWhere((s) => s.surpriseId == updatedSurprise.surpriseId);
+      final index = _userSurprises.indexWhere(
+        (s) => s.surpriseId == updatedSurprise.surpriseId,
+      );
       if (index != -1) {
-        _mySurprises[index] = updatedSurprise;
+        _userSurprises[index] = updatedSurprise;
       }
 
       if (_currentSurprise?.surpriseId == updatedSurprise.surpriseId) {
@@ -244,12 +276,14 @@ class SurpriseProvider extends ChangeNotifier {
       );
 
       // Update local state
-      final index = _mySurprises.indexWhere((s) => s.surpriseId == surpriseId);
+      final index = _userSurprises.indexWhere(
+        (s) => s.surpriseId == surpriseId,
+      );
       if (index != -1) {
-        final updated = _mySurprises[index].copyWith(
+        final updated = _userSurprises[index].copyWith(
           status: SurpriseStatus.published,
         );
-        _mySurprises[index] = updated;
+        _userSurprises[index] = updated;
 
         if (_currentSurprise?.surpriseId == surpriseId) {
           _currentSurprise = updated;
@@ -269,7 +303,7 @@ class SurpriseProvider extends ChangeNotifier {
 
   /// Delete surprise
   Future<bool> deleteSurprise({
-    required String userUid,
+    String? userUid,
     required String surpriseId,
   }) async {
     try {
@@ -279,10 +313,10 @@ class SurpriseProvider extends ChangeNotifier {
 
       await _service.deleteSurprise(
         surpriseId: surpriseId,
-        creatorUid: userUid,
+        creatorUid: userUid ?? 'unknown',
       );
 
-      _mySurprises.removeWhere((s) => s.surpriseId == surpriseId);
+      _userSurprises.removeWhere((s) => s.surpriseId == surpriseId);
 
       if (_currentSurprise?.surpriseId == surpriseId) {
         _currentSurprise = null;
@@ -420,6 +454,29 @@ class SurpriseProvider extends ChangeNotifier {
     }
   }
 
+  // ============ PREMIUM ============
+
+  /// Upgrade to premium
+  Future<bool> upgradeToPremium(String userUid) async {
+    try {
+      _isLoading = true;
+      _errorMessage = null;
+      notifyListeners();
+
+      await _service.upgradeToPremium(userUid);
+      _isPremium = true;
+
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
   // ============ HELPER METHODS ============
 
   /// Clear error message
@@ -435,6 +492,11 @@ class SurpriseProvider extends ChangeNotifier {
   }
 
   /// Refresh surprises
+  Future<void> refreshSurprises(String userUid) async {
+    await loadMySurprises(userUid);
+  }
+
+  /// Refresh (alias)
   Future<void> refresh(String userUid) async {
     await loadMySurprises(userUid);
   }

@@ -1,5 +1,8 @@
 enum UserPlan { free, premium }
 
+// Type alias for compatibility with provider
+typedef PlanType = UserPlan;
+
 enum PlanFeature {
   multipleFlowers,
   customMusic,

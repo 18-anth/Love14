@@ -1,67 +1,84 @@
 import 'package:flutter/material.dart';
+import 'package:love14/models/flower_model.dart';
 import 'package:love14/models/surprise_model.dart';
-import 'package:provider/provider.dart';
 import 'package:love14/providers/surprise_provider.dart';
-import 'package:love14/Widgets/surprise_widgets.dart';
+
+import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
+
+import 'package:love14/Widgets/surprise_widgets.dart';
+import 'package:video_player/video_player.dart';
+import 'package:just_audio/just_audio.dart';
 
 class SurpriseViewScreen extends StatefulWidget {
   final String surpriseId;
-  final String? slug; // For public URL access
+  final bool isPublicView;
 
   const SurpriseViewScreen({
-    Key? key,
-    this.surpriseId = '',
-    this.slug,
-  }) : super(key: key);
+    super.key,
+    required this.surpriseId,
+    this.isPublicView = true,
+  });
 
   @override
   State<SurpriseViewScreen> createState() => _SurpriseViewScreenState();
 }
 
-class _SurpriseViewScreenState extends State<SurpriseViewScreen>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-  bool _showQRCode = false;
+class _SurpriseViewScreenState extends State<SurpriseViewScreen> {
+  VideoPlayerController? _videoController;
+  AudioPlayer? _audioPlayer;
+  int _currentPhotoIndex = 0;
+  bool _showLetter = false;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
-    _loadSurprise();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<SurpriseProvider>().loadSurprise(widget.surpriseId);
+    });
   }
 
   @override
   void dispose() {
-    _tabController.dispose();
+    _videoController?.dispose();
+    _audioPlayer?.dispose();
     super.dispose();
   }
 
-  void _loadSurprise() {
-    final provider = context.read<SurpriseProvider>();
-    if (widget.slug != null) {
-      provider.loadPublicSurprise(widget.slug!);
-    } else {
-      provider.loadSurpriseById(widget.surpriseId);
+  void _initializeMedia(Surprise surprise) {
+    // Initialize video player if video exists
+    if (surprise.videoUrl != null && _videoController == null) {
+      _videoController = VideoPlayerController.network(surprise.videoUrl!)
+        ..initialize().then((_) {
+          setState(() {});
+        });
+    }
+
+    // Initialize audio player if music exists
+    if (surprise.musicUrl != null && _audioPlayer == null) {
+      _audioPlayer = AudioPlayer();
+      _audioPlayer!.setUrl(surprise.musicUrl!);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Sorpresa'),
+        backgroundColor: Colors.pink.shade400,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.share),
+            onPressed: () => _shareSurprise(context),
+          ),
+        ],
+      ),
       body: Consumer<SurpriseProvider>(
-        builder: (context, provider, child) {
+        builder: (context, provider, _) {
           if (provider.isLoading) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const CircularProgressIndicator(),
-                  const SizedBox(height: 20),
-                  const Text('Cargando sorpresa...'),
-                ],
-              ),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (provider.currentSurprise == null) {
@@ -69,13 +86,13 @@ class _SurpriseViewScreenState extends State<SurpriseViewScreen>
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
-                  const SizedBox(height: 20),
+                  const Icon(Icons.error, size: 64, color: Colors.red),
+                  const SizedBox(height: 16),
                   const Text('Sorpresa no encontrada'),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('Volver'),
+                    child: const Text('Atrás'),
                   ),
                 ],
               ),
@@ -83,458 +100,404 @@ class _SurpriseViewScreenState extends State<SurpriseViewScreen>
           }
 
           final surprise = provider.currentSurprise!;
+          _initializeMedia(surprise);
 
-          return CustomScrollView(
-            slivers: [
-              // ===== APP BAR =====
-              SliverAppBar(
-                expandedHeight: 250,
-                pinned: true,
-                backgroundColor: Colors.pink.shade200,
-                flexibleSpace: FlexibleSpaceBar(
-                  title: Text(surprise.recipientName),
-                  background: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Colors.pink.shade300,
-                          Colors.pink.shade100,
-                        ],
-                      ),
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                // Header with flower
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.pink.shade300, Colors.pink.shade100],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                    child: Stack(
-                      children: [
-                        // Flower animation placeholder
-                        Center(
-                          child: Icon(
-                            Icons.favorite,
-                            size: 100,
-                            color: Colors.white.withOpacity(0.3),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        surprise.flower.type.emoji,
+                        style: const TextStyle(fontSize: 96),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        surprise.title,
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'De: ${surprise.creatorName} Para: ${surprise.recipientName}',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.white70,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Description
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Descripción',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                surprise.description,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  height: 1.6,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        // View counter
-                        Positioned(
-                          top: 20,
-                          right: 20,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.9),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Row(
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Photos Gallery
+                      if (surprise.photoUrls.isNotEmpty) ...[
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Icon(Icons.visibility, size: 16),
-                                const SizedBox(width: 6),
-                                Text('${surprise.viewCount}'),
+                                const Text(
+                                  'Galería de Fotos',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Image.network(
+                                    surprise.photoUrls[_currentPhotoIndex],
+                                    height: 300,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Container(
+                                        height: 300,
+                                        color: Colors.grey.shade200,
+                                        child: const Icon(Icons.image),
+                                      );
+                                    },
+                                  ),
+                                ),
+                                if (surprise.photoUrls.length > 1) ...[
+                                  const SizedBox(height: 12),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(Icons.arrow_back),
+                                        onPressed: _currentPhotoIndex > 0
+                                            ? () {
+                                                setState(
+                                                  () => _currentPhotoIndex--,
+                                                );
+                                              }
+                                            : null,
+                                      ),
+                                      Text(
+                                        '${_currentPhotoIndex + 1}/${surprise.photoUrls.length}',
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.arrow_forward),
+                                        onPressed:
+                                            _currentPhotoIndex <
+                                                surprise.photoUrls.length - 1
+                                            ? () {
+                                                setState(
+                                                  () => _currentPhotoIndex++,
+                                                );
+                                              }
+                                            : null,
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ],
                             ),
                           ),
                         ),
+                        const SizedBox(height: 16),
                       ],
-                    ),
-                  ),
-                ),
-                actions: [
-                  IconButton(
-                    icon: const Icon(Icons.share),
-                    onPressed: () => _shareLink(surprise),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.qr_code_2),
-                    onPressed: () {
-                      setState(() {
-                        _showQRCode = !_showQRCode;
-                      });
-                    },
-                  ),
-                ],
-              ),
 
-              // ===== MAIN CONTENT =====
-              SliverToBoxAdapter(
-                child: Column(
-                  children: [
-                    // QR Code section
-                    if (_showQRCode && surprise.qrCode != null) ...[
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        color: Colors.grey.shade100,
-                        child: Column(
-                          children: [
-                            const Text(
-                              'Código QR para compartir',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            // QR Code image would go here
-                            Container(
-                              width: 200,
-                              height: 200,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: Colors.pink),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  'QR: ${surprise.publicUrl}',
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(fontSize: 12),
+                      // Video Player
+                      if (surprise.videoUrl != null) ...[
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Video',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                              ),
+                                const SizedBox(height: 12),
+                                if (_videoController != null &&
+                                    _videoController!.value.isInitialized)
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: AspectRatio(
+                                      aspectRatio:
+                                          _videoController!.value.aspectRatio,
+                                      child: Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          VideoPlayer(_videoController!),
+                                          if (!_videoController!
+                                              .value
+                                              .isPlaying)
+                                            IconButton(
+                                              icon: const Icon(
+                                                Icons.play_circle,
+                                                size: 64,
+                                                color: Colors.white,
+                                              ),
+                                              onPressed: () {
+                                                setState(() {
+                                                  _videoController!.play();
+                                                });
+                                              },
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                else
+                                  Container(
+                                    height: 200,
+                                    color: Colors.grey.shade200,
+                                    child: const Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                  ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                    ],
-
-                    // Tabs
-                    TabBar(
-                      controller: _tabController,
-                      labelColor: Colors.pink,
-                      unselectedLabelColor: Colors.grey,
-                      indicatorColor: Colors.pink,
-                      tabs: const [
-                        Tab(text: 'Mensaje'),
-                        Tab(text: 'Media'),
-                        Tab(text: 'Carta'),
+                        const SizedBox(height: 16),
                       ],
-                    ),
 
-                    SizedBox(
-                      height: 400,
-                      child: TabBarView(
-                        controller: _tabController,
-                        children: [
-                          // TAB 1: MESSAGE
-                          _buildMessageTab(surprise),
+                      // Music Player
+                      if (surprise.musicUrl != null) ...[
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Música',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                Row(
+                                  children: [
+                                    StreamBuilder<PlayerState>(
+                                      stream: _audioPlayer?.playerStateStream,
+                                      builder: (context, snapshot) {
+                                        final playerState = snapshot.data;
+                                        final playing = playerState?.playing;
 
-                          // TAB 2: MEDIA
-                          _buildMediaTab(surprise),
+                                        return IconButton(
+                                          icon: Icon(
+                                            playing == true
+                                                ? Icons.pause_circle
+                                                : Icons.play_circle,
+                                            size: 48,
+                                            color: Colors.pink,
+                                          ),
+                                          onPressed: playing == true
+                                              ? _audioPlayer?.pause
+                                              : _audioPlayer?.play,
+                                        );
+                                      },
+                                    ),
+                                    Expanded(
+                                      child: StreamBuilder<Duration?>(
+                                        stream: _audioPlayer?.positionStream,
+                                        builder: (context, snapshot) {
+                                          final duration =
+                                              _audioPlayer?.duration ??
+                                              Duration.zero;
+                                          final position =
+                                              snapshot.data ?? Duration.zero;
 
-                          // TAB 3: LETTER
-                          _buildLetterTab(surprise),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // Information section
-                    Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 16),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.amber.shade50,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.amber),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Información de la Sorpresa',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.amber.shade800,
+                                          return Column(
+                                            children: [
+                                              Slider(
+                                                min: 0,
+                                                max: duration.inMilliseconds
+                                                    .toDouble(),
+                                                value: position.inMilliseconds
+                                                    .toDouble(),
+                                                onChanged: (value) {
+                                                  _audioPlayer?.seek(
+                                                    Duration(
+                                                      milliseconds: value
+                                                          .toInt(),
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Text(
+                                                    _formatDuration(position),
+                                                    style: const TextStyle(
+                                                      fontSize: 12,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    _formatDuration(duration),
+                                                    style: const TextStyle(
+                                                      fontSize: 12,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
-                          const SizedBox(height: 12),
-                          _infoRow(
-                            'De:',
-                            surprise.creatorName,
-                            Icons.person,
-                          ),
-                          const SizedBox(height: 8),
-                          _infoRow(
-                            'Para:',
-                            surprise.recipientName,
-                            Icons.favorite,
-                          ),
-                          const SizedBox(height: 8),
-                          _infoRow(
-                            'Fecha especial:',
-                            '${surprise.specialDate.day}/${surprise.specialDate.month}/${surprise.specialDate.year}',
-                            Icons.calendar_today,
-                          ),
-                          const SizedBox(height: 8),
-                          _infoRow(
-                            'Días para fecha especial:',
-                            '${surprise.daysUntilSpecialDate()} días',
-                            Icons.schedule,
-                          ),
-                          const SizedBox(height: 8),
-                          _infoRow(
-                            'Plan:',
-                            surprise.planType == PlanType.premium
-                                ? 'Premium ⭐'
-                                : 'Gratis',
-                            Icons.card_giftcard,
-                          ),
-                        ],
-                      ),
-                    ),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
 
-                    const SizedBox(height: 32),
-                  ],
+                      // AI Letter
+                      if (surprise.aiLetter != null) ...[
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text(
+                                      '💌 Carta Romántica',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    IconButton(
+                                      icon: Icon(
+                                        _showLetter
+                                            ? Icons.expand_less
+                                            : Icons.expand_more,
+                                      ),
+                                      onPressed: () {
+                                        setState(
+                                          () => _showLetter = !_showLetter,
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                if (_showLetter) ...[
+                                  const SizedBox(height: 12),
+                                  Container(
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: Colors.pink.shade50,
+                                      border: Border.all(
+                                        color: Colors.pink.shade200,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      surprise.aiLetter!,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        height: 1.8,
+                                        fontStyle: FontStyle.italic,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+
+                      // Statistics
+                      if (!widget.isPublicView)
+                        SurpriseStatsCard(surprise: surprise),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           );
         },
       ),
     );
   }
 
-  // ===== TAB BUILDERS =====
-
-  Widget _buildMessageTab(SurpriseModel surprise) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.pink.shade50,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.pink.shade200),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Querida ${surprise.recipientName},',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  surprise.personalMessage,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    height: 1.6,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'Con amor,\n${surprise.creatorName}',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontStyle: FontStyle.italic,
-                    color: Colors.pink.shade600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+  void _shareSurprise(BuildContext context) {
+    final surprise = context.read<SurpriseProvider>().currentSurprise;
+    if (surprise != null) {
+      Share.share(
+        'Mira esta sorpresa especial: ${surprise.publicUrl}',
+        subject: 'Sorpresa: ${surprise.title}',
+      );
+    }
   }
 
-  Widget _buildMediaTab(SurpriseModel surprise) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Flowers
-          if (surprise.flowerIds.isNotEmpty) ...[
-            const Text(
-              'Flores',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.green.shade50,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.local_florist, color: Colors.green),
-                  const SizedBox(width: 12),
-                  Text(
-                    '${surprise.flowerIds.length} ${surprise.flowerType}(s)',
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-          ],
-
-          // Photos
-          if (surprise.photoUrls.isNotEmpty) ...[
-            const Text(
-              'Fotografías',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            const SizedBox(height: 12),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-              ),
-              itemCount: surprise.photoUrls.length,
-              itemBuilder: (context, index) {
-                return Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: Colors.grey.shade200,
-                  ),
-                  child: Icon(Icons.image, color: Colors.grey.shade400),
-                );
-              },
-            ),
-            const SizedBox(height: 16),
-          ],
-
-          // Music
-          if (surprise.musicUrl != null) ...[
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.blue.shade50,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.music_note, color: Colors.blue),
-                  const SizedBox(width: 12),
-                  const Expanded(child: Text('Música de fondo incluida')),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-          ],
-
-          // Video
-          if (surprise.videoUrl != null) ...[
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.purple.shade50,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.video_library, color: Colors.purple),
-                  const SizedBox(width: 12),
-                  const Expanded(child: Text('Video incluido')),
-                ],
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLetterTab(SurpriseModel surprise) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (surprise.aiLetter != null) ...[
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.amber.shade50,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.amber),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.auto_awesome, color: Colors.amber),
-                      const SizedBox(width: 8),
-                      const Text(
-                        'Carta Romántica',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    surprise.aiLetter!,
-                    style: const TextStyle(
-                      height: 1.8,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ] else
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Text(
-                'No hay carta romántica en esta sorpresa',
-                style: TextStyle(color: Colors.grey),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  // ===== HELPER WIDGETS =====
-
-  Widget _infoRow(String label, String value, IconData icon) {
-    return Row(
-      children: [
-        Icon(icon, size: 16, color: Colors.amber.shade700),
-        const SizedBox(width: 12),
-        Text(
-          label,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            value,
-            style: const TextStyle(fontSize: 14),
-          ),
-        ),
-      ],
-    );
-  }
-
-  void _shareLink(SurpriseModel surprise) {
-    Share.share(
-      '¡Te dejé una sorpresa romántica! 💝\n\n${surprise.publicUrl}',
-      subject: 'Una sorpresa especial para ti',
-    );
+  String _formatDuration(Duration duration) {
+    final minutes = duration.inMinutes;
+    final seconds = duration.inSeconds % 60;
+    return '$minutes:${seconds.toString().padLeft(2, '0')}';
   }
 }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:love14/Features/Surprises/Presentation/create_surprise_screen.dart';
-import 'package:love14/Features/Surprises/Presentation/my_prises_screen.dart';
-import 'package:love14/Features/Surprises/Presentation/surprise_view_screen.dart';
-import 'package:love14/Features/Surprises/Presentation/premium_plans_screen.dart';
+import 'package:love14/Screens/create_surprise_screen.dart';
+import 'package:love14/Screens/my_prises_screen.dart';
+import 'package:love14/Screens/surprise_view_screen.dart';
+import 'package:love14/Screens/premium_plans_screen.dart';
 
 class SurpriseRoutes {
   static const String create = '/surprise/create';
